@@ -1,0 +1,18 @@
+# Maven / Java
+/target/
+/bin/
+*.class
+
+# Eclipse
+/.classpath
+/.project
+/.settings/
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+teleconsulta.db
+
+
