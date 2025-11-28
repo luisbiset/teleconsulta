@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html"
+	xmlns:f="jakarta.faces.core" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Teleconsulta - Login</title>
+
+	<!-- CSS GLOBAL -->
+	<h:outputStylesheet library="css" name="layout.css" />
+
+	<!-- CSS DO LOGIN -->
+	<h:outputStylesheet library="css" name="login.css" />
+</h:head>
+
+<h:body>
+
+	<f:view>
+
+		<h:form id="formLogin">
+
+			<div class="login-card">
+
+				<div class="login-title">Teleconsulta</div>
+				<div class="login-subtitle">Sistema de Agendamento</div>
+
+				<p:growl id="msgs" showDetail="true" />
+
+				<p:inputMask id="cpf" mask="999.999.999-99"
+					value="#{loginController.cpf}" placeholder="CPF"
+					styleClass="login-field" required="true"
+					requiredMessage="Informe o CPF" />
+
+				<p:password id="senha" value="#{loginController.senha}"
+					placeholder="Senha" styleClass="login-field" feedback="false"
+					required="true" requiredMessage="Informe a senha" />
+
+				<p:commandButton value="Entrar" icon="pi pi-sign-in"
+					action="#{loginController.entrar}" update="formLogin msgs"
+					styleClass="login-button" />
+
+				<div class="footer">© 2025 - Sistema de Teleconsulta</div>
+
+			</div>
+
+		</h:form>
+
+	</f:view>
+
+</h:body>
+</html>

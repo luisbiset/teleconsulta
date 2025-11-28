@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html"
+	xmlns:ui="jakarta.faces.facelets" xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Teleconsulta - Sistema</title>
+
+	<h:outputStylesheet>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .topbar {
+            height: 60px;
+            background: linear-gradient(135deg, #1976d2, #0d47a1);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .layout {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: #1e293b;
+            padding-top: 20px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            display: block;
+            color: #e5e7eb;
+            padding: 14px 20px;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .menu-item:hover {
+            background-color: #1976d2;
+        }
+
+        .menu-title {
+            color: #9ca3af;
+            padding: 10px 20px;
+            font-size: 13px;
+            text-transform: uppercase;
+            border-top: 1px solid #334155;
+            margin-top: 12px;
+        }
+    </h:outputStylesheet>
+</h:head>
+
+<h:body>
+
+	<!-- TOPO -->
+	<div class="topbar">Teleconsulta - Sistema</div>
+
+	<!-- LAYOUT -->
+	<div class="layout">
+
+		<!-- MENU LATERAL -->
+		<div class="sidebar">
+
+			<!-- CADASTROS -->
+			<div class="menu-title">Cadastros</div>
+
+			<h:link value=" Usuários" outcome="/usuario/usuario.xhtml"
+				styleClass="menu-item" />
+
+			<h:link value=" Pacientes" outcome="/paciente/paciente.xhtml"
+				styleClass="menu-item" />
+
+			<h:link value=" Unidades" outcome="/unidade/unidade.xhtml"
+				styleClass="menu-item" />
+
+			<h:link value=" Salas" outcome="/sala/sala.xhtml"
+				styleClass="menu-item" />
+
+
+			<!-- MOVIMENTAÇÕES -->
+			<div class="menu-title">Movimentações</div>
+
+			<h:link value=" Reservas" outcome="/reserva/reserva.xhtml"
+				styleClass="menu-item" />
+
+
+			<!-- CONSULTAS -->
+			<div class="menu-title">Consultas</div>
+
+			<h:link value=" Disponibilidade de Salas"
+				outcome="/consulta/consulta.xhtml" styleClass="menu-item" />
+
+
+			<!-- SISTEMA -->
+			<div class="menu-title">
+				Sistema
+
+				<h:link value=" Sistema" outcome="/sistema/sistema.xhtml"
+					styleClass="menu-item" />
+
+
+
+			</div>
+
+			<h:link value=" Sair" outcome="/login.xhtml" styleClass="menu-item" />
+
+		</div>
+
+		<!-- CONTEÚDO -->
+		<div class="content">
+			<ui:insert name="conteudo" />
+		</div>
+
+	</div>
+
+</h:body>
+</html>
