@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="jakarta.enterprise.inject"
+       version="4.0">
+</beans>
