@@ -91,6 +91,36 @@
     <version>4.0.1</version>
 </dependency>
 
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.10.0</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>5.7.0</version>
+    <scope>test</scope>
+</dependency>
+
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-junit-jupiter</artifactId>
+    <version>5.7.0</version>
+    <scope>test</scope>
+</dependency>
+
+<!-- Necessário para mock de método estático -->
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-inline</artifactId>
+    <version>5.2.0</version>
+    <scope>test</scope>
+</dependency>
+
+
 <!-- IMPLEMENTAÇÃO JSON-B (YASSON) -->
 <dependency>
     <groupId>org.eclipse</groupId>
@@ -146,6 +176,13 @@
 
             </configuration>
         </plugin>
+
+			<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <version>3.2.5</version>
+</plugin>
+
 
     </plugins>
 </build>
