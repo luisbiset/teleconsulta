@@ -1,6 +1,7 @@
 package br.gov.ba.sesab.controller;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.gov.ba.sesab.entity.PacienteEntity;
@@ -20,6 +21,12 @@ public class PacienteController implements Serializable {
 
     private PacienteEntity paciente;
     private List<PacienteEntity> pacientes;
+    private List<PacienteEntity> pacientesFiltrados;
+    private String filtroPaciente;
+
+
+    
+
 
     @Inject
     private PacienteService pacienteService;
@@ -28,6 +35,7 @@ public class PacienteController implements Serializable {
     public void init() {
         novo();
         listar();
+        pacientesFiltrados = new ArrayList<>(pacientes); 
     }
 
     public void novo() {
@@ -35,12 +43,22 @@ public class PacienteController implements Serializable {
     }
     public void salvar() {
         try {
+        	
+        	if (paciente.getId() != null) {
+        	    PacienteEntity pacienteBanco = pacienteService.buscarPorId(paciente.getId());
+
+        	    paciente.setCpf(pacienteBanco.getCpf());
+        	}
 
             pacienteService.salvar(paciente);
 
             addMensagem("Paciente salvo com sucesso!");
-            novo();      
-            listar();    
+
+            pacientes = pacienteService.listarTodos();
+
+            pacientesFiltrados = new ArrayList<>(pacientes);
+
+            novo();
 
         } 
         catch (jakarta.validation.ConstraintViolationException e) {
@@ -60,17 +78,66 @@ public class PacienteController implements Serializable {
     }
 
 
+
     public void excluir(Long id) {
         try {
             pacienteService.excluir(id);
             addMensagem("Paciente excluído com sucesso!");
-            listar();
+
+            // ✅ Recarrega lista completa
+            pacientes = pacienteService.listarTodos();
+
+            // ✅ Atualiza a lista usada pela tabela (IMPORTANTE!)
+            pacientesFiltrados = new ArrayList<>(pacientes);
 
         } catch (Exception e) {
             addMensagemErro("Erro ao excluir paciente.");
             e.printStackTrace();
         }
     }
+    
+    public String getFiltroPaciente() {
+        return filtroPaciente;
+    }
+
+    public void setFiltroPaciente(String filtroPaciente) {
+        this.filtroPaciente = filtroPaciente;
+    }
+    
+    public void filtrar() {
+
+        if (filtroPaciente == null || filtroPaciente.trim().isEmpty()) {
+            pacientesFiltrados = new ArrayList<>(pacientes);
+            return;
+        }
+
+        String filtro = filtroPaciente.toLowerCase();
+
+        pacientesFiltrados = pacientes.stream()
+            .filter(p ->
+                   (p.getNome() != null && p.getNome().toLowerCase().contains(filtro))
+                || (p.getCpf() != null && p.getCpf().toLowerCase().contains(filtro))
+                || (p.getRg() != null && p.getRg().toLowerCase().contains(filtro))
+                || (p.getTelefone() != null && p.getTelefone().toLowerCase().contains(filtro))
+            )
+            .toList();
+    }
+    
+    public List<PacienteEntity> getPacientesFiltrados() {
+		return pacientesFiltrados;
+	}
+
+	public void setPacientesFiltrados(List<PacienteEntity> pacientesFiltrados) {
+		this.pacientesFiltrados = pacientesFiltrados;
+	}
+
+	public void limparFiltro() {
+        filtroPaciente = null;
+        pacientesFiltrados = new ArrayList<>(pacientes);
+    }
+
+    
+    
 
     public void editar(PacienteEntity p) {
         this.paciente = p;
