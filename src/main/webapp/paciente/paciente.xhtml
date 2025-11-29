@@ -1,109 +1,141 @@
 <ui:composition template="/template/layout.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ui="jakarta.faces.facelets"
-    xmlns:h="jakarta.faces.html"
-    xmlns:f="jakarta.faces.core"
-    xmlns:p="http://primefaces.org/ui">
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:p="http://primefaces.org/ui">
 
-    <ui:define name="conteudo">
+	<ui:define name="conteudo">
 
-        <h:form id="formPaciente">
+		<h:form id="formPaciente">
 
-            <!-- ✅ Somente o Growl (sem h:messages duplicando) -->
-            <p:growl id="msgs" showDetail="false" life="4000" />
+			<!-- ✅ APENAS GROWL (SEM MENSAGENS DUPLICADAS) -->
+			<p:growl id="msgs" showDetail="false" life="4000" />
 
-            <h2>Gerenciamento de Pacientes</h2>
+			<h2>Gerenciamento de Pacientes</h2>
 
-            <!-- BOTÃO NOVO -->
-            <p:commandButton value="Novo Paciente"
-                             icon="pi pi-plus"
-                             action="#{pacienteController.novo}"
-                             update=":formPaciente:dlg"
-                             oncomplete="PF('dlgPaciente').show()" />
+			<p:commandButton value="Novo Paciente" icon="pi pi-plus"
+				action="#{pacienteController.novo}" update=":formPaciente:dlg"
+				oncomplete="PF('dlgPaciente').show()" />
 
-            <br/><br/>
+			<br />
+			<br />
 
-            <!-- TABELA -->
-            <p:dataTable value="#{pacienteController.pacientes}"
-                         var="p"
-                         paginator="true"
-                         rows="10"
-                         paginatorPosition="bottom">
+			<!-- ✅ TABELA -->
+			<p:dataTable value="#{pacienteController.pacientes}" var="p"
+				paginator="true" rows="10" paginatorPosition="bottom">
 
-                <p:column headerText="Nome">
-                    <h:outputText value="#{p.nome}"/>
-                </p:column>
+				<p:column headerText="Nome">
+					<h:outputText value="#{p.nome}" />
+				</p:column>
 
-                <p:column headerText="CPF">
-                    <h:outputText value="#{p.cpf}"/>
-                </p:column>
+				<p:column headerText="CPF">
+					<h:outputText value="#{p.cpf}" />
+				</p:column>
 
-                <p:column headerText="Telefone">
-                    <h:outputText value="#{p.telefone}"/>
-                </p:column>
+				<p:column headerText="Telefone">
+					<h:outputText value="#{p.telefone}" />
+				</p:column>
 
-                <p:column headerText="Ações" style="width:150px; text-align:center;">
+				<p:column headerText="Ações" style="width:120px; text-align:center;">
 
-                    <p:commandButton icon="pi pi-pencil"
-                                     process="@this"
-                                     update=":formPaciente:dlg"
-                                     action="#{pacienteController.editar(p)}"
-                                     oncomplete="PF('dlgPaciente').show()" />
+					<p:commandButton icon="pi pi-pencil" process="@this"
+						update=":formPaciente:dlg"
+						action="#{pacienteController.editar(p)}"
+						oncomplete="PF('dlgPaciente').show()" />
 
-                    <p:commandButton icon="pi pi-trash"
-                                     process="@this"
-                                     update="@form :formPaciente:msgs"
-                                     action="#{pacienteController.excluir(p.id)}"
-                                     onclick="return confirm('Deseja excluir este paciente?');"/>
-                </p:column>
+					<p:commandButton icon="pi pi-trash" process="@this"
+						update="@form :formPaciente:msgs"
+						action="#{pacienteController.excluir(p.id)}"
+						onclick="return confirm('Deseja excluir este paciente?');" />
 
-            </p:dataTable>
+				</p:column>
 
-            <!-- DIALOG -->
-            <p:dialog id="dlg"
-                      widgetVar="dlgPaciente"
-                      header="Cadastro de Paciente"
-                      modal="true"
-                      closable="true"
-                      resizable="false">
+			</p:dataTable>
 
-                <h:panelGrid columns="2" cellpadding="5">
+			<!-- ✅ MODAL COM ALTURA CONTROLADA + SCROLL -->
+			<p:dialog id="dlg" widgetVar="dlgPaciente"
+				header="Cadastro de Paciente" modal="true" closable="true"
+				resizable="false" draggable="false" width="480"
+				style="max-height:90vh; overflow:hidden;">
 
-                    <h:outputLabel value="Nome:" for="nome"/>
-                    <p:inputText id="nome"
-                                 value="#{pacienteController.paciente.nome}"
-                                 maxlength="150"
-                                 onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
+				<h:panelGroup layout="block"
+					style="max-height:70vh; overflow-y:auto; padding-right:10px;">
 
-                    <h:outputLabel value="CPF:" for="cpf"/>
-                    <p:inputMask id="cpf"
-                                 mask="999.999.999-99"
-                                 value="#{pacienteController.paciente.cpf}" />
+					<h:panelGrid columns="1" cellpadding="6" style="width:100%">
 
-                    <h:outputLabel value="Telefone:" for="telefone"/>
-                    <p:inputMask id="telefone"
-                                 mask="(99) 99999-9999"
-                                 value="#{pacienteController.paciente.telefone}" />
+						<h:outputLabel value="Nome:*" />
+						<p:inputText value="#{pacienteController.paciente.nome}"
+							required="true" requiredMessage="Nome é obrigatório"
+							maxlength="150"/>
 
-                    <h:outputLabel value="Data de Nascimento:" for="dataNascimento"/>
-                    <p:datePicker id="dataNascimento"
-                                  value="#{pacienteController.paciente.dataNascimento}"
-                                  pattern="dd/MM/yyyy" />
+						<h:outputLabel value="Nome Social:" />
+						<p:inputText value="#{pacienteController.paciente.nomeSocial}" />
 
-                </h:panelGrid>
+						<h:outputLabel value="Sexo:*" />
+						<p:selectOneMenu value="#{pacienteController.paciente.sexo}"
+							required="true" requiredMessage="Sexo é obrigatório">
+							<f:selectItem itemLabel="Selecione" itemValue="#{null}"
+								noSelectionOption="true" />
+							<f:selectItem itemLabel="Masculino" itemValue="M" />
+							<f:selectItem itemLabel="Feminino" itemValue="F" />
+						</p:selectOneMenu>
 
-                <br/>
+						<h:outputLabel value="Nome da Mãe:*" />
+						<p:inputText value="#{pacienteController.paciente.nomeMae}"
+							required="true" requiredMessage="Nome da mãe é obrigatório"/>
 
-                <!-- ✅ FECHA APENAS SE NÃO HOUVER ERRO -->
-                <p:commandButton value="Salvar"
-                                 action="#{pacienteController.salvar}"
-                                 update="@form :formPaciente:msgs"
-                                 oncomplete="if (!args.validationFailed) PF('dlgPaciente').hide();" />
+						<h:outputLabel value="Nome do Pai:*" />
+						<p:inputText value="#{pacienteController.paciente.nomePai}"
+							required="true" requiredMessage="Nome do pai é obrigatório"/>
 
-            </p:dialog>
+						<h:outputLabel value="Telefone:*" />
+						<p:inputMask mask="(99) 99999-9999"
+							value="#{pacienteController.paciente.telefone}" required="true"
+							requiredMessage="Telefone é obrigatório" />
 
-        </h:form>
+						<h:outputLabel value="CPF:*" />
+						<p:inputMask mask="999.999.999-99"
+							value="#{pacienteController.paciente.cpf}" required="true"
+							requiredMessage="CPF é obrigatório" />
 
-    </ui:define>
+						<h:outputLabel value="RG:*" />
+						<p:inputText value="#{pacienteController.paciente.rg}"
+							required="true" requiredMessage="RG é obrigatório"
+							maxlength="10" />
+
+						<h:outputLabel value="CNS:*" />
+						<p:inputText value="#{pacienteController.paciente.cns}"
+							required="true" requiredMessage="CNS é obrigatório"
+							maxlength="15" />
+
+						<h:outputLabel value="Data de Nascimento:*" />
+						<p:datePicker
+							value="#{pacienteController.paciente.dataNascimento}"
+							pattern="dd/MM/yyyy" required="true"
+							requiredMessage="Data de nascimento é obrigatória" />
+
+						<h:outputLabel value="Email:" />
+						<p:inputText value="#{pacienteController.paciente.email}"
+							type="email" />
+
+						<h:outputLabel value="Endereço:*" />
+						<p:inputTextarea value="#{pacienteController.paciente.endereco}"
+							required="true" requiredMessage="Endereço é obrigatório" rows="2" />
+
+					</h:panelGrid>
+
+				</h:panelGroup>
+
+				<br />
+
+				<p:commandButton value="Salvar"
+					action="#{pacienteController.salvar}"
+					update="@form :formPaciente:msgs"
+					oncomplete="if (!args.validationFailed) PF('dlgPaciente').hide();" />
+			</p:dialog>
+
+
+		</h:form>
+
+	</ui:define>
 
 </ui:composition>
