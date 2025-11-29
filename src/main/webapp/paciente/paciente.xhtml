@@ -5,8 +5,10 @@
 
 	<ui:define name="conteudo">
 
-
-		<h:form id="formPaciente">
+		<!-- =============================================== -->
+		<!-- FORM 1 — TOPO + FILTRO + BOTÃO NOVO (SEM REQUIRED) -->
+		<!-- =============================================== -->
+		<h:form id="formFiltroPaciente">
 
 			<p:growl id="msgs" showDetail="false" life="4000" />
 
@@ -29,14 +31,15 @@
 						placeholder="Buscar por Nome, CPF, RG ou Telefone">
 
 						<p:ajax event="keyup" listener="#{pacienteController.filtrar}"
-							update="tabelaPacientes" />
+							update=":formPaciente:tabelaPacientes" />
 					</p:inputText>
 
-					<p:commandButton icon="pi pi-times" type="button"
-						styleClass="botao-limpar"
+					<!-- BOTÃO LIMPAR FUNCIONANDO DEFINITIVO -->
+					<p:commandButton icon="pi pi-times" styleClass="botao-limpar"
+						process="@this"
 						actionListener="#{pacienteController.limparFiltro}"
-						update="tabelaPacientes"
-						onclick="document.getElementById('formPaciente:filtroPaciente').value='';" />
+						update=":formPaciente:tabelaPacientes"
+						onclick="document.getElementById('formFiltroPaciente:filtroPaciente').value='';" />
 				</div>
 
 				<p:commandButton value="Novo Paciente" icon="pi pi-plus"
@@ -44,6 +47,12 @@
 					update=":formPaciente:dlg" oncomplete="PF('dlgPaciente').show()" />
 
 			</div>
+		</h:form>
+
+		<!-- =============================================== -->
+		<!-- FORM 2 — TABELA + DIALOG (COM REQUIRED) -->
+		<!-- =============================================== -->
+		<h:form id="formPaciente">
 
 			<!-- TABELA -->
 			<p:dataTable id="tabelaPacientes"
@@ -82,13 +91,16 @@
 						oncomplete="PF('dlgPaciente').show()" />
 
 					<p:commandButton icon="pi pi-trash" process="@this"
-						update="tabelaPacientes :formPaciente:msgs"
+						update="tabelaPacientes :formFiltroPaciente:msgs"
 						action="#{pacienteController.excluir(p.id)}"
 						onclick="return confirm('Deseja excluir este paciente?');" />
 				</p:column>
 
 			</p:dataTable>
 
+			<!-- =============================================== -->
+			<!-- DIALOG -->
+			<!-- =============================================== -->
 			<p:dialog id="dlg" widgetVar="dlgPaciente"
 				header="Cadastro de Paciente" modal="true" closable="true"
 				resizable="false" draggable="false" width="480"
@@ -121,31 +133,35 @@
 							maxlength="150"
 							onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
 							onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
-							
+
 						<h:outputLabel value="Nome do Pai:*" />
 						<p:inputText value="#{pacienteController.paciente.nomePai}"
 							required="true" requiredMessage="Nome do pai é obrigatório"
 							onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
 							onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
-							
+
 						<h:outputLabel value="Telefone:*" />
 						<p:inputMask mask="(99) 99999-9999"
 							value="#{pacienteController.paciente.telefone}" required="true"
 							requiredMessage="Telefone é obrigatório" />
-							
+
 						<h:outputLabel value="CPF:*" />
 						<p:inputMask mask="999.999.999-99"
 							value="#{pacienteController.paciente.cpf}" required="true"
 							requiredMessage="CPF é obrigatório"
-							  readonly="#{not empty pacienteController.paciente.id}" />
+							disabled="#{pacienteController.paciente.id != null}" 
+							unmask="true" />
 
 						<h:outputLabel value="RG:*" />
 						<p:inputText value="#{pacienteController.paciente.rg}"
 							required="true" requiredMessage="RG é obrigatório" maxlength="10" />
+
 						<h:outputLabel value="CNS:*" />
 						<p:inputText value="#{pacienteController.paciente.cns}"
 							required="true" requiredMessage="CNS é obrigatório"
 							maxlength="15" />
+
+
 						<h:outputLabel value="Data de Nascimento:*" for="dataNascimento" />
 						<p:inputMask value="#{pacienteController.paciente.dataNascimento}"
 							mask="99/99/9999" required="true"
@@ -163,7 +179,7 @@
 				<br />
 				<p:commandButton value="Salvar"
 					action="#{pacienteController.salvar}"
-					update="@form :formPaciente:msgs"
+					update="@form :formFiltroPaciente:msgs"
 					oncomplete="if (!args.validationFailed) PF('dlgPaciente').hide();" />
 			</p:dialog>
 

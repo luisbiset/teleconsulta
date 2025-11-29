@@ -35,7 +35,6 @@ public class UsuarioEntity implements Serializable {
     private String email;
 
     @NotBlank(message = "Cpf é obrigatório")	
-    @Pattern(regexp = "\\d{11}", message = "CPF deve conter exatamente 11 números")
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
 

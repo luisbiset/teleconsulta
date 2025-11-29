@@ -32,6 +32,7 @@ public class PacienteEntity implements Serializable {
 	private String cpf;
 
 	@NotBlank(message = "RG é obrigatório")
+	@Pattern(regexp = "\\d{10}", message = "RG deve conter 10 dígitos")
 	@Column(nullable = false, length = 20)
 	private String rg;
 
@@ -70,7 +71,7 @@ public class PacienteEntity implements Serializable {
 	private String nomeSocial;
 
 	@NotBlank(message = "CNS é obrigatório")
-	@Pattern(regexp = "\\d{15}", message = "CNS deve conter 15 números")
+	@Pattern(regexp = "\\d{15}", message = "CNS deve conter 15 dígitos")
 	@Column(nullable = false, unique = true, length = 15)
 	private String cns;
 

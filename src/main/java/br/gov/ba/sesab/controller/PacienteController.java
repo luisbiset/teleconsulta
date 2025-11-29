@@ -35,7 +35,6 @@ public class PacienteController implements Serializable {
     public void init() {
         novo();
         listar();
-        pacientesFiltrados = new ArrayList<>(pacientes); 
     }
 
     public void novo() {
@@ -135,8 +134,6 @@ public class PacienteController implements Serializable {
         filtroPaciente = null;
         pacientesFiltrados = new ArrayList<>(pacientes);
     }
-
-    
     
 
     public void editar(PacienteEntity p) {
@@ -145,6 +142,7 @@ public class PacienteController implements Serializable {
 
     public void listar() {
         pacientes = pacienteService.listarTodos();
+        pacientesFiltrados = new ArrayList<>(pacientes);
     }
 
     private void addMensagem(String msg) {

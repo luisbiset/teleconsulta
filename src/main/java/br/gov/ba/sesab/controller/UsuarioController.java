@@ -1,6 +1,7 @@
 package br.gov.ba.sesab.controller;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class UsuarioController implements Serializable {
     private String senhaAtual;
     private String novaSenha;
     private String confirmarSenha;
+    private List<UsuarioEntity> usuariosFiltrados;
+    private String filtroUsuario;
 
     
     @Inject
@@ -33,9 +36,9 @@ public class UsuarioController implements Serializable {
 
     @PostConstruct
     public void init() {
-    	System.out.println("TIMEZONE JVM: " + java.util.TimeZone.getDefault());
         usuario = new UsuarioEntity();
         listar();
+       
     }
     
     public void novo() {
@@ -104,6 +107,30 @@ public class UsuarioController implements Serializable {
 
     public void listar() {
         usuarios = usuarioService.listarTodos();
+        usuariosFiltrados = new ArrayList<>(usuarios);
+        
+    }
+    
+    public void filtrar() {
+
+        if (filtroUsuario == null || filtroUsuario.trim().isEmpty()) {
+            usuariosFiltrados = new ArrayList<>(usuarios);
+            return;
+        }
+
+        String filtro = filtroUsuario.toLowerCase();
+
+        usuariosFiltrados = usuarios.stream()
+            .filter(u ->
+                (u.getNome() != null && u.getNome().toLowerCase().contains(filtro)) ||
+                (u.getCpf() != null && u.getCpf().contains(filtro))
+            )
+            .toList();
+    }
+    
+    public void limparFiltro() {
+        filtroUsuario = null;
+        usuariosFiltrados = new ArrayList<>(usuarios);
     }
 
     private void addMensagem(String msg) {
@@ -155,6 +182,28 @@ public class UsuarioController implements Serializable {
     public boolean isAdmin() {
         return SessaoUtil.isAdmin();
     }
+
+	public List<UsuarioEntity> getUsuariosFiltrados() {
+		return usuariosFiltrados;
+	}
+
+	public void setUsuariosFiltrados(List<UsuarioEntity> usuariosFiltrados) {
+		this.usuariosFiltrados = usuariosFiltrados;
+	}
+
+	public String getFiltroUsuario() {
+		return filtroUsuario;
+	}
+
+	public void setFiltroUsuario(String filtroUsuario) {
+		this.filtroUsuario = filtroUsuario;
+	}
+
+	public void setUsuarios(List<UsuarioEntity> usuarios) {
+		this.usuarios = usuarios;
+	}
+    
+    
 
 
 }
