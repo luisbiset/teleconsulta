@@ -6,13 +6,16 @@ import br.gov.ba.sesab.entity.PacienteEntity;
 import br.gov.ba.sesab.repository.PacienteRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class PacienteService {
 
     @Inject
     private PacienteRepository repository;
-
+    
+    
+    @Transactional
     public void salvar(PacienteEntity paciente) {
         if (paciente.getId() == null) {
             repository.salvar(paciente);

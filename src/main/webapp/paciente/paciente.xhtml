@@ -9,7 +9,8 @@
 
         <h:form id="formPaciente">
 
-            <p:growl id="msgs" showDetail="true"/>
+            <!-- ✅ Somente o Growl (sem h:messages duplicando) -->
+            <p:growl id="msgs" showDetail="false" life="4000" />
 
             <h2>Gerenciamento de Pacientes</h2>
 
@@ -27,8 +28,7 @@
                          var="p"
                          paginator="true"
                          rows="10"
-                          paginatorPosition="bottom"
-                         >
+                         paginatorPosition="bottom">
 
                 <p:column headerText="Nome">
                     <h:outputText value="#{p.nome}"/>
@@ -50,10 +50,9 @@
                                      action="#{pacienteController.editar(p)}"
                                      oncomplete="PF('dlgPaciente').show()" />
 
-                    <!-- EXCLUIR -->
                     <p:commandButton icon="pi pi-trash"
                                      process="@this"
-                                     update="@form"
+                                     update="@form :formPaciente:msgs"
                                      action="#{pacienteController.excluir(p.id)}"
                                      onclick="return confirm('Deseja excluir este paciente?');"/>
                 </p:column>
@@ -70,28 +69,36 @@
 
                 <h:panelGrid columns="2" cellpadding="5">
 
-                    <h:outputLabel value="Nome:"/>
-                    <p:inputText value="#{pacienteController.paciente.nome}" required="true"/>
+                    <h:outputLabel value="Nome:" for="nome"/>
+                    <p:inputText id="nome"
+                                 value="#{pacienteController.paciente.nome}"
+                                 maxlength="150"
+                                 onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
 
-                    <h:outputLabel value="CPF:"/>
-                    <p:inputText value="#{pacienteController.paciente.cpf}" required="true"/>
+                    <h:outputLabel value="CPF:" for="cpf"/>
+                    <p:inputMask id="cpf"
+                                 mask="999.999.999-99"
+                                 value="#{pacienteController.paciente.cpf}" />
 
-                    <h:outputLabel value="Telefone:"/>
-                    <p:inputText value="#{pacienteController.paciente.telefone}" required="true"/>
+                    <h:outputLabel value="Telefone:" for="telefone"/>
+                    <p:inputMask id="telefone"
+                                 mask="(99) 99999-9999"
+                                 value="#{pacienteController.paciente.telefone}" />
 
-                    <h:outputLabel value="Data de Nascimento:"/>
-                    <p:datePicker value="#{pacienteController.paciente.dataNascimento}"
-                                  pattern="dd/MM/yyyy"
-                                  required="true"/>
+                    <h:outputLabel value="Data de Nascimento:" for="dataNascimento"/>
+                    <p:datePicker id="dataNascimento"
+                                  value="#{pacienteController.paciente.dataNascimento}"
+                                  pattern="dd/MM/yyyy" />
+
                 </h:panelGrid>
 
                 <br/>
 
-                <!-- SALVAR -->
+                <!-- ✅ FECHA APENAS SE NÃO HOUVER ERRO -->
                 <p:commandButton value="Salvar"
                                  action="#{pacienteController.salvar}"
-                                 update="@form"
-                                 oncomplete="PF('dlgPaciente').hide();" />
+                                 update="@form :formPaciente:msgs"
+                                 oncomplete="if (!args.validationFailed) PF('dlgPaciente').hide();" />
 
             </p:dialog>
 

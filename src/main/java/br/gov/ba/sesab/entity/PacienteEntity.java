@@ -1,14 +1,14 @@
 package br.gov.ba.sesab.entity;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "paciente")
@@ -20,22 +20,49 @@ public class PacienteEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(min = 3, max = 150, message = "Nome deve ter entre 3 e 150 caracteres")
+    @Pattern(
+        regexp = "^[A-Za-zÀ-ÿ]+( [A-Za-zÀ-ÿ]+)*$",
+        message = "Nome não pode conter números, símbolos ou espaços duplicados"
+    )
+    @Column(nullable = false, length = 150)
     private String nome;
-    private String nomeSocial;
-    private String sexo;
-    private String nomeMae;
-    private String nomePai;
-    private String telefone;
-    private String email;
-    private String cpf;
-    private String rg;
-    private String cns;
 
+    @NotBlank(message = "CPF é obrigatório")
+    @Pattern(regexp = "\\d{11}", message = "CPF deve conter exatamente 11 números")
+    @Column(nullable = false, unique = true, length = 11)
+    private String cpf;
+
+    @NotBlank(message = "Telefone é obrigatório")
+    @Pattern(regexp = "\\d{10,11}", message = "Telefone deve conter 10 ou 11 números")
+    @Column(nullable = false, length = 11)
+    private String telefone;
+
+    @NotNull(message = "Data de nascimento é obrigatória")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "data_nascimento", nullable = false)
     private Date dataNascimento;
+
+
+    private String nomeSocial;
+
+    private String sexo;
+
+    private String nomeMae;
+
+    private String nomePai;
+
+    @Email(message = "Email inválido")
+    private String email;
+
+    private String rg;
+
+    private String cns;
 
     private String endereco;
 
-    // GETTERS E SETTERS
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

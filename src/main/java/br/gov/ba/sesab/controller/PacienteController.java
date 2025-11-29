@@ -30,33 +30,36 @@ public class PacienteController implements Serializable {
         listar();
     }
 
-    // ==========================
-    // NOVO (LIMPA FORMULÁRIO)
-    // ==========================
     public void novo() {
         paciente = new PacienteEntity();
     }
-
-    // ==========================
-    // SALVAR (CADASTRO + EDIÇÃO)
-    // ==========================
     public void salvar() {
         try {
+
             pacienteService.salvar(paciente);
 
             addMensagem("Paciente salvo com sucesso!");
-            novo();      // limpa formulário
-            listar();    // recarrega tabela
+            novo();      
+            listar();    
 
-        } catch (Exception e) {
-            addMensagemErro("Erro ao salvar paciente.");
+        } 
+        catch (jakarta.validation.ConstraintViolationException e) {
+
+            e.getConstraintViolations().forEach(v -> {
+                FacesContext.getCurrentInstance().addMessage(
+                    null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, v.getMessage(), null)
+                );
+            });
+
+        } 
+        catch (Exception e) {
+            addMensagemErro("Erro inesperado ao salvar paciente.");
             e.printStackTrace();
         }
     }
 
-    // ==========================
-    // EXCLUIR
-    // ==========================
+
     public void excluir(Long id) {
         try {
             pacienteService.excluir(id);
@@ -69,23 +72,14 @@ public class PacienteController implements Serializable {
         }
     }
 
-    // ==========================
-    // EDITAR (CARREGA O OBJETO)
-    // ==========================
     public void editar(PacienteEntity p) {
         this.paciente = p;
     }
 
-    // ==========================
-    // LISTAR
-    // ==========================
     public void listar() {
         pacientes = pacienteService.listarTodos();
     }
 
-    // ==========================
-    // MENSAGENS
-    // ==========================
     private void addMensagem(String msg) {
         FacesContext.getCurrentInstance().addMessage(null,
             new FacesMessage(FacesMessage.SEVERITY_INFO, msg, null));
@@ -96,9 +90,6 @@ public class PacienteController implements Serializable {
             new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, null));
     }
 
-    // ==========================
-    // GETTERS
-    // ==========================
     public PacienteEntity getPaciente() {
         return paciente;
     }
