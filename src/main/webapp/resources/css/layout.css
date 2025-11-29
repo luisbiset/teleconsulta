@@ -1,0 +1,205 @@
+/* RESET BÁSICO */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* CORPO GERAL */
+.layout-body {
+    min-height: 100vh;
+    background: #f1f5f9;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   TOPO (TÍTULO CENTRALIZADO)
+========================= */
+.topbar {
+    height: 70px;
+    background: #0f172a;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* CENTRALIZA O TÍTULO */
+    padding: 0 32px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.2);
+    position: relative;
+}
+
+.titulo-sistema {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
+}
+
+/* OCULTA FORMULÁRIO/BOTÃO DO TOPO */
+.topbar-form {
+    display: none;
+}
+
+/* =========================
+   CONTEÚDO CENTRAL
+========================= */
+.conteudo-central {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 90px 24px;
+    text-align: center;
+    color: #1e293b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-texto {
+    font-size: 56px;
+    font-weight: 800;
+    color: #1d4ed8;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+.descricao {
+    max-width: 700px;
+    font-size: 18px;
+    line-height: 1.7;
+    color: #334155;
+    margin-bottom: 40px;
+}
+
+/* =========================
+   BOTÃO PRINCIPAL (ACESSAR)
+========================= */
+.btn-principal {
+    background: #2563eb !important;
+    border: none !important;
+    padding: 16px 48px !important;
+    font-size: 20px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-principal:hover {
+    background: #1d4ed8 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.45);
+}
+
+/* =========================
+   RODAPÉ
+========================= */
+.rodape {
+    height: 55px;
+    background: #e2e8f0;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    font-size: 14px;
+    border-top: 1px solid #cbd5f5;
+}
+
+.versao {
+    font-weight: 600;
+}
+
+.topo-pagina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.titulo-pagina {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.subtitulo-pagina {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.botao-novo {
+    padding: 8px 14px !important;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.barra-filtro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.campo-filtro {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border-radius: 6px;
+    padding: 6px 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.campo-filtro input {
+    border: none !important;
+    outline: none !important;
+    width: 300px;
+}
+
+.icone-pesquisa {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.botao-limpar {
+    background: #0d6efd !important;
+    border-radius: 6px !important;
+    width: 36px;
+    height: 36px;
+}
+
+.tabela-padrao {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabela-padrao th {
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.tabela-padrao td {
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .barra-filtro {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .campo-filtro input {
+        width: 100%;
+    }
+    
+    
+}
+
+
+
+
