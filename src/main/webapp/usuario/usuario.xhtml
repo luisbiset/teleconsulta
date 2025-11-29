@@ -1,8 +1,6 @@
 <ui:composition template="/template/layout.xhtml"
-	xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="jakarta.faces.facelets"
-	xmlns:h="jakarta.faces.html"
-	xmlns:f="jakarta.faces.core"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
 	xmlns:p="http://primefaces.org/ui">
 
 	<ui:define name="conteudo">
@@ -15,17 +13,16 @@
 
 			<!-- BOTÃO NOVO -->
 			<p:commandButton value="Novo Usuário" icon="pi pi-plus"
-				action="#{usuarioController.novo}"
-				update=":formUsuario:dlg"
+				action="#{usuarioController.novo}" update=":formUsuario:dlg"
 				oncomplete="PF('dlgUsuario').show()"
 				rendered="#{usuarioController.admin}" />
 
-			<br /><br />
+			<br />
+			<br />
 
 			<!-- TABELA -->
 			<p:dataTable value="#{usuarioController.usuarios}" var="u"
-				paginator="true" rows="10"
-				 paginatorPosition="bottom"
+				paginator="true" rows="10" paginatorPosition="bottom"
 				emptyMessage="Nenhum usuário encontrado">
 
 				<p:column headerText="Nome">
@@ -42,24 +39,19 @@
 
 				<p:column headerText="Data de Cadastro">
 					<h:outputText value="#{u.dataCadastro}">
-						<f:convertDateTime pattern="dd/MM/yyyy"
-							timeZone="America/Bahia" />
+						<f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Bahia" />
 					</h:outputText>
 				</p:column>
 
-				<p:column headerText="Ações"
-					style="width:150px; text-align:center;"
+				<p:column headerText="Ações" style="width:150px; text-align:center;"
 					rendered="#{usuarioController.admin}">
 
-					<p:commandButton icon="pi pi-pencil"
-						process="@this"
-						update=":formUsuario:dlg"
-						oncomplete="PF('dlgUsuario').show()"
+					<p:commandButton icon="pi pi-pencil" process="@this"
+						update=":formUsuario:dlg" oncomplete="PF('dlgUsuario').show()"
 						action="#{usuarioController.editar(u)}" />
 
-					<p:commandButton icon="pi pi-trash"
-						process="@this"
-						update="@form"
+					<p:commandButton icon="pi pi-trash" process="@this"
+						update="@form :formUsuario:msgs"
 						action="#{usuarioController.excluir(u.id)}"
 						onclick="return confirm('Deseja excluir este usuário?');" />
 
@@ -69,45 +61,48 @@
 
 			<!-- DIALOG -->
 			<p:dialog id="dlg" widgetVar="dlgUsuario"
-				header="Cadastro de Usuário"
-				modal="true" closable="true"
+				header="Cadastro de Usuário" modal="true" closable="true"
 				resizable="false">
 
 				<h:panelGrid columns="2" cellpadding="5">
 
-					<h:outputLabel value="Nome:" />
-					<p:inputText value="#{usuarioController.usuario.nome}"
-						required="true" />
+					<h:outputLabel value="Nome:" for="nome" />
+					<p:inputText id="nome" value="#{usuarioController.usuario.nome}"
+						required="true" requiredMessage="Nome é obrigatório"
+						maxlength="150"
+						onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
+						onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
 
-					<h:outputLabel value="Email:" />
-					<p:inputText value="#{usuarioController.usuario.email}"
-						required="true" />
 
-					<h:outputLabel value="CPF:" />
-					<p:inputMask mask="999.999.999-99"
+					<h:outputLabel value="Email:" for="email" />
+					<p:inputText id="email" value="#{usuarioController.usuario.email}"
+						required="true" requiredMessage="Email é obrigatório" type="email"
+						onblur="this.value = this.value.trim()" />
+
+					<h:outputLabel value="CPF:" for="cpf" />
+					<p:inputMask id="cpf" mask="999.999.999-99"
 						value="#{usuarioController.usuario.cpf}"
-						required="true" />
+						required="#{usuarioController.usuario.id == null}"
+						disabled="#{usuarioController.usuario.id != null}"
+						requiredMessage="CPF é obrigatório" />
 
 					<h:outputLabel value="Perfil:" for="perfil" />
-
 					<p:selectOneMenu id="perfil"
-						value="#{usuarioController.usuario.perfil}"
-						required="true"
-						style="width:100%">
+						value="#{usuarioController.usuario.perfil}" required="true"
+						requiredMessage="Perfil é obrigatório" style="width:100%">
 
-						<f:selectItem itemLabel="Selecione" itemValue="#{null}" />
+						<f:selectItem itemLabel="Selecione" itemValue="#{null}"
+							noSelectionOption="true" />
 						<f:selectItem itemLabel="Administrador" itemValue="ADMIN" />
 						<f:selectItem itemLabel="Operador" itemValue="OPERADOR" />
 
 					</p:selectOneMenu>
 
-					<h:outputLabel value="Senha:" />
-					<p:password value="#{usuarioController.usuario.senha}"
+					<h:outputLabel value="Senha:" for="senha" />
+					<p:password id="senha" value="#{usuarioController.usuario.senha}"
 						required="#{usuarioController.usuario.id == null}"
-						feedback="true"
-						promptLabel="Digite a senha"
-						weakLabel="Fraca"
-						goodLabel="Boa"
+						requiredMessage="Senha é obrigatória no cadastro" feedback="true"
+						promptLabel="Digite a senha" weakLabel="Fraca" goodLabel="Boa"
 						strongLabel="Forte" />
 
 				</h:panelGrid>
@@ -118,7 +113,7 @@
 					rendered="#{usuarioController.admin}"
 					action="#{usuarioController.salvar}"
 					update="@form :formUsuario:msgs"
-					oncomplete="PF('dlgUsuario').hide();" />
+					oncomplete="if (!args.validationFailed) PF('dlgUsuario').hide();" />
 
 			</p:dialog>
 

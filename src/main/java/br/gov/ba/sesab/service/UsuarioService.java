@@ -17,6 +17,8 @@ public class UsuarioService {
 	@Inject
 	private UsuarioRepository usuarioRepository;
 	
+	
+	@Transactional
 	public void salvar(UsuarioEntity usuario) {
 
 	    UsuarioEntity logado = SessaoUtil.getUsuarioLogado();

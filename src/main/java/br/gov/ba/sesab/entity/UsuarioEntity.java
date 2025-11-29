@@ -5,16 +5,10 @@ import java.util.Date;
 import java.util.Objects;
 
 import br.gov.ba.sesab.enums.PerfilUsuario;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "usuario")
@@ -26,31 +20,39 @@ public class UsuarioEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Nome é obrigatório")
+    @Size(min = 3, max = 150, message = "Nome deve ter entre 3 e 150 caracteres")
+    @Pattern(
+        regexp = "^[A-Za-zÀ-ÿ]+( [A-Za-zÀ-ÿ]+)*$",
+        message = "Nome não pode conter números, símbolos ou espaços duplicados"
+    )
     @Column(nullable = false, length = 150)
     private String nome;
 
+    @NotBlank(message = "Email é obrigatório")
+    @jakarta.validation.constraints.Email(message = "Email inválido")
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @NotBlank(message = "Cpf é obrigatório")	
+    @Pattern(regexp = "\\d{11}", message = "CPF deve conter exatamente 11 números")
     @Column(nullable = false, unique = true, length = 11)
     private String cpf;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "data_cadastro")
     private Date dataCadastro;
-    
+
     @Column(name = "senha", nullable = false)
     private String senha;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "perfil", nullable = false)
     private PerfilUsuario perfil;
 
-
-    public UsuarioEntity() {
-    }
-
-    // ===== GETTERS E SETTERS =====
+    // ======================
+    // GETTERS E SETTERS
+    // ======================
 
     public Long getId() {
         return id;
@@ -91,47 +93,33 @@ public class UsuarioEntity implements Serializable {
     public void setDataCadastro(Date dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
-    
-    
 
-	public String getSenha() {
-		return senha;
-	}
+    public String getSenha() {
+        return senha;
+    }
 
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
-	
+    public PerfilUsuario getPerfil() {
+        return perfil;
+    }
 
-	public PerfilUsuario getPerfil() {
-		return perfil;
-	}
+    public void setPerfil(PerfilUsuario perfil) {
+        this.perfil = perfil;
+    }
 
-	public void setPerfil(PerfilUsuario perfil) {
-		this.perfil = perfil;
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		UsuarioEntity other = (UsuarioEntity) obj;
-		return Objects.equals(id, other.id);
-	}
-    
-    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        UsuarioEntity other = (UsuarioEntity) obj;
+        return Objects.equals(id, other.id);
+    }
 }

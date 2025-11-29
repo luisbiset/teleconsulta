@@ -45,22 +45,20 @@ public class UsuarioController implements Serializable {
     public void salvar() {
         try {
 
-            // =========================
-            // NOVO USUÁRIO
-            // =========================
-            if (usuario.getId() == null) {
+        	if (usuario.getId() == null) {
 
-                usuario.setDataCadastro(new Date());
+        	    if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
+        	        addMensagemErro("Senha é obrigatória para novo usuário.");
+        	        return;
+        	    }
 
-                // ✅ GARANTE PERFIL PADRÃO SE NÃO VIER DA TELA
-                if (usuario.getPerfil() == null) {
-                    usuario.setPerfil(PerfilUsuario.OPERADOR);
-                }
+        	    usuario.setDataCadastro(new Date());
+        	    
 
-            } 
-            // =========================
-            // EDIÇÃO DE USUÁRIO
-            // =========================
+        	    if (usuario.getPerfil() == null) {
+        	        usuario.setPerfil(PerfilUsuario.OPERADOR);
+        	    }
+        	}
             else {
 
                 UsuarioEntity usuarioBanco = usuarioService.buscarPorId(usuario.getId());

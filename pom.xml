@@ -56,6 +56,13 @@
     	<artifactId>hibernate-community-dialects</artifactId>
     	<version>${hibernate.version}</version>
 	</dependency>
+	
+	<!-- Bean Validation (IMPLEMENTAÇÃO REAL) -->
+<dependency>
+    <groupId>org.hibernate.validator</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>8.0.1.Final</version>
+</dependency>
 
 
 		<!-- SQLITE -->
@@ -64,15 +71,15 @@
           <artifactId>sqlite-jdbc</artifactId>
           <version>3.45.2.0</version>
       </dependency>
-      
-      <!-- JSON-B API -->
+
+		<!-- JSON-B API -->
 	<dependency>
    		 <groupId>jakarta.json.bind</groupId>
     	<artifactId>jakarta.json.bind-api</artifactId>
    		 <version>3.0.0</version>
 	</dependency>
-	
-	<!-- CDI - WELD (IMPLEMENTAÇÃO DO CDI PARA TOMCAT) -->
+
+		<!-- CDI - WELD (IMPLEMENTAÇÃO DO CDI PARA TOMCAT) -->
 <dependency>
     <groupId>org.jboss.weld.servlet</groupId>
     <artifactId>weld-servlet-core</artifactId>
@@ -112,7 +119,7 @@
     <scope>test</scope>
 </dependency>
 
-<!-- Necessário para mock de método estático -->
+		<!-- Necessário para mock de método estático -->
 <dependency>
     <groupId>org.mockito</groupId>
     <artifactId>mockito-inline</artifactId>
@@ -121,7 +128,7 @@
 </dependency>
 
 
-<!-- IMPLEMENTAÇÃO JSON-B (YASSON) -->
+		<!-- IMPLEMENTAÇÃO JSON-B (YASSON) -->
 <dependency>
     <groupId>org.eclipse</groupId>
     <artifactId>yasson</artifactId>
@@ -148,7 +155,7 @@
 
     <plugins>
 
-        <!-- COMPILADOR JAVA -->
+			<!-- COMPILADOR JAVA -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
@@ -158,7 +165,7 @@
             </configuration>
         </plugin>
 
-        <!-- EMPACOTAMENTO WAR (FORÇANDO WEBAPP) -->
+			<!-- EMPACOTAMENTO WAR (FORÇANDO WEBAPP) -->
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-war-plugin</artifactId>
