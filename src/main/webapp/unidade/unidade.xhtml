@@ -1,0 +1,142 @@
+<ui:composition template="/template/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formFiltroUnidade">
+
+			<p:growl id="msgs" showDetail="false" life="3000" />
+
+			<h2 style="margin-bottom: 30px;">Gerenciamento de Unidades de
+				Saúde</h2>
+
+			<div class="barra-filtro">
+				<div class="campo-filtro">
+					<i class="pi pi-search icone-pesquisa" />
+
+					<p:inputText id="filtroUnidade"
+						value="#{unidadeSaudeController.filtroUnidade}"
+						placeholder="Buscar por Nome, CNPJ ou CNES"
+
+>
+						<p:ajax event="keyup" listener="#{unidadeSaudeController.filtrar}"
+							update=":formUnidade:tabelaUnidades" />
+					</p:inputText>
+
+					<p:commandButton icon="pi pi-times" styleClass="botao-limpar"
+						process="@this"
+						actionListener="#{unidadeSaudeController.limparFiltro}"
+						update=":formUnidade:tabelaUnidades"
+						onclick="document.getElementById('formFiltroUnidade:filtroUnidade').value='';" />
+				</div>
+
+				<p:commandButton value="Nova Unidade" icon="pi pi-plus"
+					action="#{unidadeSaudeController.novo}" update=":formUnidade:dlg"
+					oncomplete="PF('dlgUnidade').show()"
+					rendered="#{loginController.admin}" />
+
+			</div>
+
+		</h:form>
+
+		<h:form id="formUnidade">
+
+			<p:dataTable id="tabelaUnidades"
+				value="#{unidadeSaudeController.unidadesFiltradas}" var="u"
+				paginator="true" rows="10" paginatorPosition="bottom"
+				emptyMessage="Nenhuma unidade encontrada">
+
+				<p:column headerText="Nome">
+					<h:outputText value="#{u.nome}" />
+				</p:column>
+
+				<p:column headerText="Razão Social">
+					<h:outputText value="#{u.razaoSocial}" />
+				</p:column>
+
+				<p:column headerText="Sigla">
+					<h:outputText value="#{u.sigla}" />
+				</p:column>
+
+				<p:column headerText="CNPJ">
+					<h:outputText value="#{u.cnpj}" />
+				</p:column>
+
+				<p:column headerText="CNES">
+					<h:outputText value="#{u.cnes}" />
+				</p:column>
+
+				<p:column headerText="Ações" rendered="#{loginController.admin}">
+
+					<p:commandButton icon="pi pi-pencil" process="@this"
+						update=":formUnidade:dlg" oncomplete="PF('dlgUnidade').show()"
+						action="#{unidadeSaudeController.editar(u)}" />
+
+					<p:commandButton icon="pi pi-trash" style="margin-left:5px"
+						process="@this" update=":formUnidade :formFiltroUnidade:msgs"
+						action="#{unidadeSaudeController.excluir(u.id)}"
+						onclick="return confirm('Deseja excluir esta unidade?');" />
+
+				</p:column>
+
+			</p:dataTable>
+
+			<p:dialog id="dlg" widgetVar="dlgUnidade"
+				header="Cadastro de Unidade" modal="true" closable="true"
+				resizable="false">
+
+				<h:panelGrid columns="2" cellpadding="5">
+
+					<h:outputLabel value="Nome:" for="nome" />
+					<p:inputText id="nome"
+						value="#{unidadeSaudeController.unidade.nome}" required="true"
+						requiredMessage="Nome é obrigatório" maxlength="150"
+						onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
+						onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
+
+					<h:outputLabel value="Razão Social:" for="razao" />
+					<p:inputText id="razao"
+						value="#{unidadeSaudeController.unidade.razaoSocial}"
+						required="true" requiredMessage="Razão Social é obrigatória"
+						maxlength="200"
+						onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
+						onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
+
+					<h:outputLabel value="Sigla:" for="sigla" />
+					<p:inputText id="sigla"
+						value="#{unidadeSaudeController.unidade.sigla}" required="true"
+						requiredMessage="Sigla é obrigatória" maxlength="10"
+						onkeypress="if (!/[a-zA-Z]/.test(event.key)) return false;" />
+
+					<h:outputLabel value="CNPJ:" for="cnpj" />
+					<p:inputMask id="cnpj"
+						value="#{unidadeSaudeController.unidade.cnpj}"
+						mask="99.999.999/9999-99" required="true"
+						converter="cnpjConverter" requiredMessage="CNPJ é obrigatório"
+						readonly="#{unidadeSaudeController.unidade.id != null}" />
+
+					<h:outputLabel value="CNES:" for="cnes" />
+					<p:inputMask id="cnes"
+						value="#{unidadeSaudeController.unidade.cnes}" mask="9999999"
+						required="true" requiredMessage="CNES é obrigatório"
+						readonly="#{unidadeSaudeController.unidade.id != null}" />
+
+				</h:panelGrid>
+
+				<br />
+
+				<p:commandButton value="Salvar"
+					action="#{unidadeSaudeController.salvar}"
+					update="@form :formFiltroUnidade:msgs"
+					oncomplete="PF('dlgUnidade').hide();"
+					rendered="#{loginController.admin}" />
+
+			</p:dialog>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>
