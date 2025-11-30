@@ -1,0 +1,55 @@
+/* Container geral do filtro */
+.consulta-faixa {
+    max-width: 600px;
+    margin-bottom: 18px;
+}
+
+/* Linha única (Unidade) */
+.linha-completa {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+/* Linha dupla (hora e data) */
+.linha-dupla {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 14px;
+}
+
+/* Campo individual */
+.campo {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Labels */
+.consulta-faixa label {
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    color: #374151;
+}
+
+/* Inputs */
+.consulta-faixa input,
+.consulta-faixa select {
+    width: 100% !important;
+    height: 38px;
+    box-sizing: border-box;
+}
+
+/* Botão */
+.consulta-botoes {
+    display: flex;
+    justify-content: flex-end;
+    max-width: 600px;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}

@@ -68,7 +68,9 @@ public class UsuarioService {
 	    usuarioRepository.salvar(usuario);
 	}
 
-
+	public List<UsuarioEntity> listarSolicitantes() {
+	    return usuarioRepository.listarUsuariosSolicitantes();
+	}
 
 
 	public UsuarioEntity buscarPorId(Long id) {
@@ -121,26 +123,6 @@ public class UsuarioService {
 		return null;
 	}
 
-	@Transactional
-	public void criarUsuarioInicial() {
-
-		UsuarioEntity existente = usuarioRepository.buscarPorCpf("12345678900");
-
-		if (existente != null) {
-			System.out.println("ℹ️ Usuário inicial já existe.");
-			return;
-		}
-
-		UsuarioEntity u = new UsuarioEntity();
-		u.setNome("Usuário Inicial");
-		u.setEmail("admin@teleconsulta.com");
-		u.setCpf("12345678900");
-		u.setSenha("123");
-		u.setDataCadastro(new Date());
-
-		usuarioRepository.salvar(u);
-
-		System.out.println("✅ Usuário inicial criado com sucesso!");
-	}
+	
 
 }

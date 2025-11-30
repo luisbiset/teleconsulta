@@ -45,5 +45,13 @@ public class SalaRepository {
     public SalaEntity findById(Long id) {
         return em.find(SalaEntity.class, id);
     }
+    
+    public List<SalaEntity> buscarPorUnidade(Long idUnidade) {
+        return em.createQuery(
+            "SELECT s FROM SalaEntity s WHERE s.unidade.id = :id", SalaEntity.class)
+            .setParameter("id", idUnidade)
+            .getResultList();
+    }
+
 }
 

@@ -1,0 +1,114 @@
+<ui:composition template="/template/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="head">
+        <h:outputStylesheet library="css" name="consulta-salas.css" />
+    </ui:define>
+
+    <ui:define name="conteudo">
+
+        <h:form id="formConsulta">
+
+            <p:growl id="msgs" showDetail="false" />
+
+            <h2 style="margin-bottom: 25px;">Consulta de Salas Disponíveis</h2>
+
+<div class="consulta-faixa">
+
+    <div class="linha-completa">
+        <label>Unidade:</label>
+        <p:selectOneMenu value="#{consultaController.idUnidade}"
+                         required="true"
+                          requiredMessage="Unidade é obrigatória.">
+                         
+            <f:selectItem itemLabel="Selecione" itemValue="#{null}" />
+            <f:selectItems value="#{consultaController.unidades}"
+                           var="u"
+                           itemLabel="#{u.nome}"
+                           itemValue="#{u.id}" />
+        </p:selectOneMenu>
+    </div>
+
+    <div class="linha-dupla">
+        <div class="campo">
+            <label>Hora Início:</label>
+            <p:inputMask value="#{consultaController.horaInicio}"
+                         mask="99:99"
+                         placeholder="HH:mm"
+                         required="true"
+                          requiredMessage="Hora Inicio é obrigatória."
+                         />
+        </div>
+
+        <div class="campo">
+            <label>Hora Fim:</label>
+            <p:inputMask value="#{consultaController.horaFim}"
+                         mask="99:99"
+                         placeholder="HH:mm"
+                         required="true"
+                         requiredMessage="Hora Fim é obrigatória."
+                         />
+        </div>
+    </div>
+
+    <div class="linha-dupla">
+        <div class="campo">
+            <label>Data Início:</label>
+            <p:inputMask value="#{consultaController.dataInicio}"
+                         mask="99/99/9999"
+                         placeholder="dd/MM/yyyy"
+                         required="true"
+                         requiredMessage="Data Inicio é obrigatória."
+                         />
+        </div>
+
+        <div class="campo">
+            <label>Data Fim:</label>
+            <p:inputMask value="#{consultaController.dataFim}"
+                         mask="99/99/9999"
+                         placeholder="dd/MM/yyyy"
+                         required="true"
+                         requiredMessage="Data fim é obrigatória"
+                         />
+        </div>
+    </div>
+
+</div>
+
+<div class="consulta-botoes">
+    <p:commandButton value="Consultar"
+                     icon="pi pi-search"
+                     action="#{consultaController.consultarDisponibilidade}"
+                     update="tabelaSalas msgs"/>
+</div>
+
+
+
+            <p:dataTable id="tabelaSalas"
+                         value="#{consultaController.salasDisponiveis}"
+                         var="s"
+                         paginator="true"
+                         paginatorPosition="bottom"
+                         rows="10"
+                         
+                         emptyMessage="Nenhuma sala disponível para o período informado">
+
+                <p:column headerText="Sala">
+                    <h:outputText value="#{s.nome}" />
+                </p:column>
+
+                <p:column headerText="Capacidade">
+                    <h:outputText value="#{s.capacidade}" />
+                </p:column>
+
+            </p:dataTable>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

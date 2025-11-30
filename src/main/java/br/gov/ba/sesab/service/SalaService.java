@@ -12,23 +12,28 @@ import jakarta.transaction.Transactional;
 public class SalaService {
 
     @Inject
-    private SalaRepository repository;
+    private SalaRepository salaRepository;
 
     @Transactional
     public void salvar(SalaEntity sala) {
-        repository.salvar(sala);
+    	salaRepository.salvar(sala);
     }
 
     @Transactional
     public void excluir(Long id) {
-        repository.excluir(id);
+    	salaRepository.excluir(id);
     }
     
     public List<SalaEntity> listarTodas() {
-        return repository.listarTodas();
+        return salaRepository.listarTodas();
     }
 
     public SalaEntity findById(Long id) {
-        return repository.findById(id);
+        return salaRepository.findById(id);
     }
+    
+    public List<SalaEntity> listarPorUnidade(Long idUnidade) {
+        return salaRepository.buscarPorUnidade(idUnidade);
+    }
+
 }

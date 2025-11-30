@@ -3,6 +3,7 @@ package br.gov.ba.sesab.repository;
 import java.util.List;
 
 import br.gov.ba.sesab.entity.UsuarioEntity;
+import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.util.HibernateUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
@@ -124,6 +125,19 @@ public class UsuarioRepository {
 	        em.close();
 	    }
 	}
+	
+	public List<UsuarioEntity> listarUsuariosSolicitantes() {
+		EntityManager em = HibernateUtil.getEntityManager();
+	    return em.createQuery("""
+	        SELECT u FROM UsuarioEntity u
+	        WHERE u.perfil NOT IN (:perfis)
+	        ORDER BY u.nome
+	    """, UsuarioEntity.class)
+	    .setParameter("perfis", List.of(PerfilUsuario.ADMIN, PerfilUsuario.ATENDENTE))
+	    .getResultList();
+	}
+
+
 
 	
 	

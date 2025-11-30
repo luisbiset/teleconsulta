@@ -76,7 +76,7 @@ public class PacienteService {
 
         } else {
             PacienteEntity pacienteBanco =
-                    pacienteRepository.buscarPorId(paciente.getId());
+                    pacienteRepository.findById(paciente.getId());
 
             if (pacienteBanco == null) {
                 throw new RuntimeException("Paciente não encontrado.");
@@ -87,12 +87,17 @@ public class PacienteService {
 
         pacienteRepository.salvar(paciente);
     }
+    
+    public PacienteEntity findById(Long id) {
+    	
+    	return pacienteRepository.findById(id);
+    }
 
 
     @Transactional
     public void excluir(Long idPaciente) {
 
-        PacienteEntity paciente = pacienteRepository.buscarPorId(idPaciente);
+        PacienteEntity paciente = pacienteRepository.findById(idPaciente);
 
         if (paciente == null) {
             throw new RuntimeException("Paciente não encontrado.");
@@ -104,4 +109,11 @@ public class PacienteService {
     public List<PacienteEntity> listarTodos() {
         return pacienteRepository.listarTodos();
     }
+
+	
+
+	public PacienteEntity findByUsuario(Long id) {
+		
+		return pacienteRepository.findByUsuario(id);
+	}
 }

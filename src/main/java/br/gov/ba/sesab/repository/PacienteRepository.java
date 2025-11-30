@@ -6,6 +6,7 @@ import br.gov.ba.sesab.entity.PacienteEntity;
 import br.gov.ba.sesab.util.HibernateUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 
 @ApplicationScoped
 public class PacienteRepository {
@@ -46,7 +47,7 @@ public class PacienteRepository {
         }
     }
     
-    public PacienteEntity buscarPorId(Long id) {
+    public PacienteEntity findById(Long id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             return em.find(PacienteEntity.class, id);
@@ -54,6 +55,21 @@ public class PacienteRepository {
             em.close();
         }
     }
+    
+    public PacienteEntity findByUsuario(Long idUsuario) {
+    	EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT p FROM PacienteEntity p WHERE p.usuario.id = :idUsuario",
+                PacienteEntity.class
+            )
+            .setParameter("idUsuario", idUsuario)
+            .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
 }
 
 

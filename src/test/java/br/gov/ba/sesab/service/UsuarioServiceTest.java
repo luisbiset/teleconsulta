@@ -137,24 +137,6 @@ class UsuarioServiceTest {
     }
 
    
-    @Test
-    void deveCriarUsuarioInicialQuandoNaoExistir() {
-        when(usuarioRepository.buscarPorCpf("12345678900"))
-                .thenReturn(null);
-
-        usuarioService.criarUsuarioInicial();
-
-        verify(usuarioRepository).salvar(any(UsuarioEntity.class));
-    }
-
-    @Test
-    void naoDeveCriarUsuarioInicialQuandoJaExistir() {
-        when(usuarioRepository.buscarPorCpf("12345678900"))
-                .thenReturn(new UsuarioEntity());
-
-        usuarioService.criarUsuarioInicial();
-
-        verify(usuarioRepository, never()).salvar(any());
-    }
+   
 }
 
