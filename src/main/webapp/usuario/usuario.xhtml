@@ -22,7 +22,7 @@
 
 					<p:inputText id="filtroUsuario"
 						value="#{usuarioController.filtroUsuario}"
-						placeholder="Buscar por Nome, CPF, Email ou Perfil">
+						placeholder="Buscar por Nome ou CPF">
 
 						<p:ajax event="keyup" listener="#{usuarioController.filtrar}"
 							update="tabelaUsuarios" />
@@ -30,18 +30,16 @@
 
 					<p:commandButton icon="pi pi-times" styleClass="botao-limpar"
 						process="@this" actionListener="#{usuarioController.limparFiltro}"
-						
 						update=":formUsuario:tabelaUsuarios :formUsuario:filtroUsuario" />
 
 
 				</div>
-				
-				
-			<p:commandButton value="Novo Usuário" icon="pi pi-plus"
-				action="#{usuarioController.novo}" update=":formUsuario:dlg"
-				oncomplete="PF('dlgUsuario').show()"
-				styleClass="botao-novo"
-				rendered="#{usuarioController.admin}" />
+
+
+				<p:commandButton value="Novo Usuário" icon="pi pi-plus"
+					action="#{usuarioController.novo}" update=":formUsuario:dlg"
+					oncomplete="PF('dlgUsuario').show()" styleClass="botao-novo"
+					rendered="#{usuarioController.admin}" />
 
 			</div>
 			<p:dataTable id="tabelaUsuarios"

@@ -5,14 +5,10 @@
 
 	<ui:define name="conteudo">
 
-		<!-- =============================================== -->
-		<!-- FORM 1 — TOPO + FILTRO + BOTÃO NOVO (SEM REQUIRED) -->
-		<!-- =============================================== -->
 		<h:form id="formFiltroPaciente">
 
 			<p:growl id="msgs" showDetail="false" life="4000" />
 
-			<!-- TOPO -->
 			<div class="topo-pagina">
 				<div>
 					<h2 class="titulo-pagina">Gerenciamento de Pacientes</h2>
@@ -27,7 +23,7 @@
 
 					<p:inputText id="filtroPaciente"
 						value="#{pacienteController.filtroPaciente}"
-						placeholder="Buscar por Nome, CPF, RG ou Telefone">
+						placeholder="Buscar por Nome ou CPF">
 
 						<p:ajax event="keyup" listener="#{pacienteController.filtrar}"
 							update=":formPaciente:tabelaPacientes" />
@@ -41,8 +37,8 @@
 				</div>
 
 				<p:commandButton value="Novo Paciente" icon="pi pi-plus"
-					styleClass="botao-novo" action="#{pacienteController.novo}"
-					update=":formPaciente:dlg" oncomplete="PF('dlgPaciente').show()" />
+					action="#{pacienteController.novo}" update=":formPaciente:dlg"
+					oncomplete="PF('dlgPaciente').show()" />
 
 			</div>
 		</h:form>
@@ -99,17 +95,22 @@
 				<h:panelGroup layout="block"
 					style="max-height:70vh; overflow-y:auto; padding-right:10px;">
 					<h:panelGrid columns="1" cellpadding="6" style="width:100%">
+
+
 						<h:outputLabel value="Nome:*" />
 						<p:inputText value="#{pacienteController.paciente.usuario.nome}"
 							required="true" requiredMessage="Nome é obrigatório"
 							maxlength="150"
 							onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
 							onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
+
+
 						<h:outputLabel value="Nome Social:" />
 						<p:inputText value="#{pacienteController.paciente.nomeSocial}"
 							maxlength="150"
 							onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
 							onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
+
 						<h:outputLabel value="Sexo:*" />
 						<p:selectOneMenu value="#{pacienteController.paciente.sexo}"
 							required="true" requiredMessage="Sexo é obrigatório">
@@ -118,6 +119,8 @@
 							<f:selectItem itemLabel="Masculino" itemValue="M" />
 							<f:selectItem itemLabel="Feminino" itemValue="F" />
 						</p:selectOneMenu>
+
+
 						<h:outputLabel value="Nome da Mãe:*" />
 						<p:inputText value="#{pacienteController.paciente.nomeMae}"
 							required="true" requiredMessage="Nome da mãe é obrigatório"
@@ -131,20 +134,23 @@
 							onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
 							onblur="this.value = this.value.trim().replace(/\s+/g, ' ')" />
 
+
 						<h:outputLabel value="Telefone:*" />
 						<p:inputMask mask="(99) 99999-9999"
 							value="#{pacienteController.paciente.telefone}" required="true"
 							converter="telefoneConverter"
 							requiredMessage="Telefone é obrigatório" />
 
+
 						<h:outputLabel value="CPF:" for="cpf" />
-						<p:inputText id="cpf"
+
+						<p:inputMask id="cpf"
 							value="#{pacienteController.paciente.usuario.cpf}"
+							mask="999.999.999-99" converter="cpfConverter"
 							required="#{pacienteController.paciente.usuario.id == null}"
-							requiredMessage="CPF é obrigatório" maxlength="11"
-							readonly="#{pacienteController.paciente.usuario.id != null}"
-							oninput="this.value = this.value.replace(/[^0-9]/g, '');"
-							onkeypress="if (!/[0-9]/.test(event.key)) return false;" />
+							requiredMessage="CPF é obrigatório"
+							readonly="#{pacienteController.paciente.usuario.id != null}" />
+
 
 
 						<h:outputLabel value="RG:*" />
