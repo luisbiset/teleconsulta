@@ -10,46 +10,25 @@ import jakarta.persistence.EntityManager;
 @ApplicationScoped
 public class PacienteRepository {
 
-    public void salvar(PacienteEntity paciente) {
-        EntityManager em = HibernateUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(paciente);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
+	public void salvar(PacienteEntity paciente) {
+	    EntityManager em = HibernateUtil.getEntityManager();
+	    try {
+	        em.getTransaction().begin();
+	        em.merge(paciente);   // ✅ SEM persist
+	        em.getTransaction().commit();
+	    } finally {
+	        em.close();
+	    }
+	}
 
-    public void atualizar(PacienteEntity paciente) {
-        EntityManager em = HibernateUtil.getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(paciente);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
 
     public void excluir(Long id) {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             em.getTransaction().begin();
             PacienteEntity p = em.find(PacienteEntity.class, id);
-            if (p != null) {
-                em.remove(p);
-            }
+            if (p != null) em.remove(p);
             em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
-
-    public PacienteEntity buscarPorId(Long id) {
-        EntityManager em = HibernateUtil.getEntityManager();
-        try {
-            return em.find(PacienteEntity.class, id);
         } finally {
             em.close();
         }
@@ -59,13 +38,23 @@ public class PacienteRepository {
         EntityManager em = HibernateUtil.getEntityManager();
         try {
             return em.createQuery(
-                "SELECT p FROM PacienteEntity p ORDER BY p.nome",
+                "SELECT p FROM PacienteEntity p ORDER BY p.id",
                 PacienteEntity.class
             ).getResultList();
         } finally {
             em.close();
         }
     }
+    
+    public PacienteEntity buscarPorId(Long id) {
+        EntityManager em = HibernateUtil.getEntityManager();
+        try {
+            return em.find(PacienteEntity.class, id);
+        } finally {
+            em.close();
+        }
+    }
 }
+
 
 

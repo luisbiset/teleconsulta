@@ -32,6 +32,7 @@ class UsuarioServiceTest {
     @InjectMocks
     private UsuarioService usuarioService;
 
+   
     @Test
     void deveSalvarUsuarioQuandoLogadoForAdmin() {
         UsuarioEntity admin = new UsuarioEntity();
@@ -41,6 +42,10 @@ class UsuarioServiceTest {
         usuario.setNome("Teste");
         usuario.setCpf("123");
         usuario.setSenha("123");
+        usuario.setEmail("teste@email.com");
+
+        when(usuarioRepository.buscarPorLogin("teste@email.com"))
+                .thenReturn(null);
 
         try (MockedStatic<SessaoUtil> mocked = mockStatic(SessaoUtil.class)) {
             mocked.when(SessaoUtil::getUsuarioLogado).thenReturn(admin);
@@ -55,9 +60,10 @@ class UsuarioServiceTest {
     @Test
     void naoDevePermitirSalvarUsuarioQuandoNaoForAdmin() {
         UsuarioEntity comum = new UsuarioEntity();
-        comum.setPerfil(PerfilUsuario.OPERADOR);
+        comum.setPerfil(PerfilUsuario.ATENDENTE);
 
         UsuarioEntity usuario = new UsuarioEntity();
+        usuario.setEmail("teste@email.com");
 
         try (MockedStatic<SessaoUtil> mocked = mockStatic(SessaoUtil.class)) {
             mocked.when(SessaoUtil::getUsuarioLogado).thenReturn(comum);
@@ -70,6 +76,38 @@ class UsuarioServiceTest {
             verify(usuarioRepository, never()).salvar(any());
         }
     }
+
+    @Test
+    void naoDeveSalvarQuandoEmailJaExistir() {
+        UsuarioEntity admin = new UsuarioEntity();
+        admin.setPerfil(PerfilUsuario.ADMIN);
+
+        UsuarioEntity existente = new UsuarioEntity();
+        existente.setId(1L);
+        existente.setEmail("email@teste.com");
+
+        UsuarioEntity novo = new UsuarioEntity();
+        novo.setEmail("email@teste.com");
+
+        when(usuarioRepository.buscarPorLogin("email@teste.com"))
+                .thenReturn(existente);
+
+        try (MockedStatic<SessaoUtil> mocked = mockStatic(SessaoUtil.class)) {
+            mocked.when(SessaoUtil::getUsuarioLogado).thenReturn(admin);
+
+            RuntimeException ex = assertThrows(RuntimeException.class, () ->
+                usuarioService.salvar(novo)
+            );
+
+            assertEquals(
+                "Já existe um usuário cadastrado com este email.",
+                ex.getMessage()
+            );
+
+            verify(usuarioRepository, never()).salvar(any());
+        }
+    }
+
 
     @Test
     void deveAutenticarUsuarioComSenhaValida() {
@@ -98,9 +136,11 @@ class UsuarioServiceTest {
         assertNull(autenticado);
     }
 
+   
     @Test
     void deveCriarUsuarioInicialQuandoNaoExistir() {
-        when(usuarioRepository.buscarPorCpf("12345678900")).thenReturn(null);
+        when(usuarioRepository.buscarPorCpf("12345678900"))
+                .thenReturn(null);
 
         usuarioService.criarUsuarioInicial();
 
@@ -110,10 +150,11 @@ class UsuarioServiceTest {
     @Test
     void naoDeveCriarUsuarioInicialQuandoJaExistir() {
         when(usuarioRepository.buscarPorCpf("12345678900"))
-            .thenReturn(new UsuarioEntity());
+                .thenReturn(new UsuarioEntity());
 
         usuarioService.criarUsuarioInicial();
 
         verify(usuarioRepository, never()).salvar(any());
     }
 }
+
