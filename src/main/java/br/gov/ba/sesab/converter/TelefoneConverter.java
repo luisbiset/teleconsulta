@@ -12,7 +12,6 @@ public class TelefoneConverter implements Converter<String> {
     public String getAsObject(FacesContext context, UIComponent component, String value) {
         if (value == null) return null;
 
-        // Remove tudo que não for número
         return value.replaceAll("\\D", "");
     }
 

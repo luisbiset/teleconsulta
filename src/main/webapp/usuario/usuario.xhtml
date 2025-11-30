@@ -11,11 +11,6 @@
 
 			<h2>Gerenciamento de Usuários</h2>
 
-			<!-- BOTÃO NOVO -->
-			<p:commandButton value="Novo Usuário" icon="pi pi-plus"
-				action="#{usuarioController.novo}" update=":formUsuario:dlg"
-				oncomplete="PF('dlgUsuario').show()"
-				rendered="#{usuarioController.admin}" />
 
 			<br />
 			<br />
@@ -33,13 +28,20 @@
 							update="tabelaUsuarios" />
 					</p:inputText>
 
-					<p:commandButton icon="pi pi-times" type="button"
-						styleClass="botao-limpar" process="@this" immediate="true"
-						actionListener="#{pacienteController.limparFiltro}"
-						update=":formPaciente:tabelaPacientes :formPaciente:filtroPaciente" />
+					<p:commandButton icon="pi pi-times" styleClass="botao-limpar"
+						process="@this" actionListener="#{usuarioController.limparFiltro}"
+						
+						update=":formUsuario:tabelaUsuarios :formUsuario:filtroUsuario" />
 
 
 				</div>
+				
+				
+			<p:commandButton value="Novo Usuário" icon="pi pi-plus"
+				action="#{usuarioController.novo}" update=":formUsuario:dlg"
+				oncomplete="PF('dlgUsuario').show()"
+				styleClass="botao-novo"
+				rendered="#{usuarioController.admin}" />
 
 			</div>
 			<p:dataTable id="tabelaUsuarios"
@@ -60,8 +62,12 @@
 				</p:column>
 
 				<p:column headerText="Data de cadastro">
-					<h:outputText value="#{u.dataCadastro}" />
+					<h:outputText value="#{u.dataCadastro}">
+						<f:convertDateTime pattern="dd/MM/yyyy"
+							timeZone="America/Sao_Paulo" />
+					</h:outputText>
 				</p:column>
+
 
 				<p:column headerText="Ações" style="width:120px; text-align:center;">
 
@@ -77,7 +83,6 @@
 
 			</p:dataTable>
 
-			<!-- DIALOG -->
 			<p:dialog id="dlg" widgetVar="dlgUsuario"
 				header="Cadastro de Usuário" modal="true" closable="true"
 				resizable="false">
@@ -98,11 +103,19 @@
 						onblur="this.value = this.value.trim()" />
 
 					<h:outputLabel value="CPF:" for="cpf" />
-					<p:inputMask id="cpf" mask="999.999.999-99"
-						value="#{usuarioController.usuario.cpf}"
+					<p:inputText id="cpf" value="#{usuarioController.usuario.cpf}"
 						required="#{usuarioController.usuario.id == null}"
-						disabled="#{usuarioController.usuario.id != null}"
-						requiredMessage="CPF é obrigatório" />
+						requiredMessage="CPF é obrigatório" maxlength="11"
+						readonly="#{usuarioController.usuario.id != null}"
+						oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+						onkeypress="if (!/[0-9]/.test(event.key)) return false;"
+						onblur="
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value.length !== 11) {
+            alert('CPF deve conter exatamente 11 números');
+            this.focus();
+        }
+    " />
 
 					<h:outputLabel value="Perfil:" for="perfil" />
 					<p:selectOneMenu id="perfil"
@@ -112,7 +125,7 @@
 						<f:selectItem itemLabel="Selecione" itemValue="#{null}"
 							noSelectionOption="true" />
 						<f:selectItem itemLabel="Administrador" itemValue="ADMIN" />
-						<f:selectItem itemLabel="Operador" itemValue="OPERADOR" />
+						<f:selectItem itemLabel="Atendente" itemValue="ATENDENTE" />
 
 					</p:selectOneMenu>
 

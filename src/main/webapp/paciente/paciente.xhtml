@@ -20,7 +20,6 @@
 				</div>
 			</div>
 
-			<!-- FILTRO + BOTÃO NOVO -->
 			<div class="barra-filtro">
 
 				<div class="campo-filtro">
@@ -34,7 +33,6 @@
 							update=":formPaciente:tabelaPacientes" />
 					</p:inputText>
 
-					<!-- BOTÃO LIMPAR FUNCIONANDO DEFINITIVO -->
 					<p:commandButton icon="pi pi-times" styleClass="botao-limpar"
 						process="@this"
 						actionListener="#{pacienteController.limparFiltro}"
@@ -49,12 +47,8 @@
 			</div>
 		</h:form>
 
-		<!-- =============================================== -->
-		<!-- FORM 2 — TABELA + DIALOG (COM REQUIRED) -->
-		<!-- =============================================== -->
 		<h:form id="formPaciente">
 
-			<!-- TABELA -->
 			<p:dataTable id="tabelaPacientes"
 				value="#{pacienteController.pacientesFiltrados}" var="p"
 				paginator="true" rows="10" paginatorPosition="bottom"
@@ -62,11 +56,11 @@
 				emptyMessage="Nenhum registro encontrado.">
 
 				<p:column headerText="Nome">
-					<h:outputText value="#{p.nome}" />
+					<h:outputText value="#{p.usuario.nome}" />
 				</p:column>
 
 				<p:column headerText="CPF">
-					<h:outputText value="#{p.cpf}" />
+					<h:outputText value="#{p.usuario.cpf}" />
 				</p:column>
 
 				<p:column headerText="RG">
@@ -98,9 +92,6 @@
 
 			</p:dataTable>
 
-			<!-- =============================================== -->
-			<!-- DIALOG -->
-			<!-- =============================================== -->
 			<p:dialog id="dlg" widgetVar="dlgPaciente"
 				header="Cadastro de Paciente" modal="true" closable="true"
 				resizable="false" draggable="false" width="480"
@@ -109,7 +100,7 @@
 					style="max-height:70vh; overflow-y:auto; padding-right:10px;">
 					<h:panelGrid columns="1" cellpadding="6" style="width:100%">
 						<h:outputLabel value="Nome:*" />
-						<p:inputText value="#{pacienteController.paciente.nome}"
+						<p:inputText value="#{pacienteController.paciente.usuario.nome}"
 							required="true" requiredMessage="Nome é obrigatório"
 							maxlength="150"
 							onkeypress="if (!/[a-zA-ZÀ-ÿ\s]/.test(event.key) || (event.key === ' ' &amp;&amp; this.value.endsWith(' '))) return false;"
@@ -143,14 +134,18 @@
 						<h:outputLabel value="Telefone:*" />
 						<p:inputMask mask="(99) 99999-9999"
 							value="#{pacienteController.paciente.telefone}" required="true"
+							converter="telefoneConverter"
 							requiredMessage="Telefone é obrigatório" />
 
-						<h:outputLabel value="CPF:*" />
-						<p:inputMask mask="999.999.999-99"
-							value="#{pacienteController.paciente.cpf}" required="true"
-							requiredMessage="CPF é obrigatório"
-							disabled="#{pacienteController.paciente.id != null}" 
-							unmask="true" />
+						<h:outputLabel value="CPF:" for="cpf" />
+						<p:inputText id="cpf"
+							value="#{pacienteController.paciente.usuario.cpf}"
+							required="#{pacienteController.paciente.usuario.id == null}"
+							requiredMessage="CPF é obrigatório" maxlength="11"
+							readonly="#{pacienteController.paciente.usuario.id != null}"
+							oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+							onkeypress="if (!/[0-9]/.test(event.key)) return false;" />
+
 
 						<h:outputLabel value="RG:*" />
 						<p:inputText value="#{pacienteController.paciente.rg}"
@@ -169,7 +164,7 @@
 							<f:convertDateTime pattern="dd/MM/yyyy" />
 						</p:inputMask>
 						<h:outputLabel value="Email:" />
-						<p:inputText value="#{pacienteController.paciente.email}"
+						<p:inputText value="#{pacienteController.paciente.usuario.email}"
 							type="email" />
 						<h:outputLabel value="Endereço:*" />
 						<p:inputTextarea value="#{pacienteController.paciente.endereco}"
