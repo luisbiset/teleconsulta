@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.gov.ba.sesab.entity.PacienteEntity;
+import br.gov.ba.sesab.entity.UsuarioEntity;
 import br.gov.ba.sesab.service.PacienteService;
+import br.gov.ba.sesab.service.UsuarioService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -17,112 +19,129 @@ import jakarta.inject.Named;
 @ViewScoped
 public class PacienteController implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private PacienteEntity paciente;
+	private List<PacienteEntity> pacientes;
+	private List<PacienteEntity> pacientesFiltrados;
+	private String filtroPaciente;
 
-    private PacienteEntity paciente;
-    private List<PacienteEntity> pacientes;
-    private List<PacienteEntity> pacientesFiltrados;
-    private String filtroPaciente;
+	@Inject
+	private PacienteService pacienteService;
 
+	@Inject
+	UsuarioService usuarioService;
 
-    
+	@PostConstruct
+	public void init() {
+		paciente = new PacienteEntity();
+		paciente.setUsuario(new UsuarioEntity());
+		listar();
+	}
 
+	public void novo() {
+		paciente = new PacienteEntity();
+		paciente.setUsuario(new UsuarioEntity());
+	}
 
-    @Inject
-    private PacienteService pacienteService;
+	public void salvar() {
+	    try {
+	        pacienteService.salvarComUsuario(paciente);
 
-    @PostConstruct
-    public void init() {
-        novo();
-        listar();
-    }
+	        listar();
+	        novo();
 
-    public void novo() {
-        paciente = new PacienteEntity();
-    }
-    public void salvar() {
-        try {
-        	
-        	if (paciente.getId() != null) {
-        	    PacienteEntity pacienteBanco = pacienteService.buscarPorId(paciente.getId());
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(FacesMessage.SEVERITY_INFO,
+	                "Paciente salvo com sucesso!", null));
 
-        	    paciente.setCpf(pacienteBanco.getCpf());
-        	}
+	    } catch (RuntimeException e) { 
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(
+	                FacesMessage.SEVERITY_WARN,
+	                e.getMessage(), 
+	                null
+	            )
+	        );
 
-            pacienteService.salvar(paciente);
+	    } catch (Exception e) { 
+	        e.printStackTrace();
 
-            addMensagem("Paciente salvo com sucesso!");
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(
+	                FacesMessage.SEVERITY_ERROR,
+	                "Erro inesperado ao salvar paciente.",
+	                null
+	            )
+	        );
+	    }
+	}
 
-            pacientes = pacienteService.listarTodos();
+	public void editar(PacienteEntity p) {
+		this.paciente = p;
+	}
 
-            pacientesFiltrados = new ArrayList<>(pacientes);
+	public void listar() {
+		pacientes = pacienteService.listarTodos();
+		pacientesFiltrados = new ArrayList<>(pacientes);
+	}
 
-            novo();
+	public void filtrar() {
+		if (filtroPaciente == null || filtroPaciente.isBlank()) {
+			pacientesFiltrados = new ArrayList<>(pacientes);
+			return;
+		}
 
-        } 
-        catch (jakarta.validation.ConstraintViolationException e) {
+		String f = filtroPaciente.toLowerCase();
+		pacientesFiltrados = pacientes.stream()
+				.filter(p -> p.getUsuario().getNome().toLowerCase().contains(f) || p.getUsuario().getCpf().contains(f))
+				.toList();
+	}
 
-            e.getConstraintViolations().forEach(v -> {
-                FacesContext.getCurrentInstance().addMessage(
-                    null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, v.getMessage(), null)
-                );
-            });
+	public void limparFiltro() {
+		filtroPaciente = null;
+		pacientesFiltrados = new ArrayList<>(pacientes);
+	}
+	
+	public void excluir(Long id) {
+	    try {
+	        pacienteService.excluir(id);
+	        listar();
 
-        } 
-        catch (Exception e) {
-            addMensagemErro("Erro inesperado ao salvar paciente.");
-            e.printStackTrace();
-        }
-    }
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(
+	                FacesMessage.SEVERITY_INFO,
+	                "Paciente excluído com sucesso!",
+	                null
+	            )
+	        );
 
+	    } catch (Exception e) {
+	        e.printStackTrace();
 
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(
+	                FacesMessage.SEVERITY_ERROR,
+	                "Erro ao excluir paciente.",
+	                null
+	            )
+	        );
+	    }
+	}
 
-    public void excluir(Long id) {
-        try {
-            pacienteService.excluir(id);
-            addMensagem("Paciente excluído com sucesso!");
+	public PacienteEntity getPaciente() {
+		if (paciente == null)
+			novo();
+		return paciente;
+	}
 
-            // ✅ Recarrega lista completa
-            pacientes = pacienteService.listarTodos();
+	public List<PacienteEntity> getPacientes() {
+		return pacientes;
+	}
 
-            // ✅ Atualiza a lista usada pela tabela (IMPORTANTE!)
-            pacientesFiltrados = new ArrayList<>(pacientes);
+	public void setPacientes(List<PacienteEntity> pacientes) {
+		this.pacientes = pacientes;
+	}
 
-        } catch (Exception e) {
-            addMensagemErro("Erro ao excluir paciente.");
-            e.printStackTrace();
-        }
-    }
-    
-    public String getFiltroPaciente() {
-        return filtroPaciente;
-    }
-
-    public void setFiltroPaciente(String filtroPaciente) {
-        this.filtroPaciente = filtroPaciente;
-    }
-    
-    public void filtrar() {
-
-        if (filtroPaciente == null || filtroPaciente.trim().isEmpty()) {
-            pacientesFiltrados = new ArrayList<>(pacientes);
-            return;
-        }
-
-        String filtro = filtroPaciente.toLowerCase();
-
-        pacientesFiltrados = pacientes.stream()
-            .filter(p ->
-                   (p.getNome() != null && p.getNome().toLowerCase().contains(filtro))
-                || (p.getCpf() != null && p.getCpf().toLowerCase().contains(filtro))
-                || (p.getRg() != null && p.getRg().toLowerCase().contains(filtro))
-                || (p.getTelefone() != null && p.getTelefone().toLowerCase().contains(filtro))
-            )
-            .toList();
-    }
-    
-    public List<PacienteEntity> getPacientesFiltrados() {
+	public List<PacienteEntity> getPacientesFiltrados() {
 		return pacientesFiltrados;
 	}
 
@@ -130,37 +149,24 @@ public class PacienteController implements Serializable {
 		this.pacientesFiltrados = pacientesFiltrados;
 	}
 
-	public void limparFiltro() {
-        filtroPaciente = null;
-        pacientesFiltrados = new ArrayList<>(pacientes);
-    }
-    
+	public PacienteService getPacienteService() {
+		return pacienteService;
+	}
 
-    public void editar(PacienteEntity p) {
-        this.paciente = p;
-    }
+	public void setPacienteService(PacienteService pacienteService) {
+		this.pacienteService = pacienteService;
+	}
 
-    public void listar() {
-        pacientes = pacienteService.listarTodos();
-        pacientesFiltrados = new ArrayList<>(pacientes);
-    }
+	public void setPaciente(PacienteEntity paciente) {
+		this.paciente = paciente;
+	}
 
-    private void addMensagem(String msg) {
-        FacesContext.getCurrentInstance().addMessage(null,
-            new FacesMessage(FacesMessage.SEVERITY_INFO, msg, null));
-    }
+	public String getFiltroPaciente() {
+		return filtroPaciente;
+	}
 
-    private void addMensagemErro(String msg) {
-        FacesContext.getCurrentInstance().addMessage(null,
-            new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, null));
-    }
+	public void setFiltroPaciente(String filtroPaciente) {
+		this.filtroPaciente = filtroPaciente;
+	}
 
-    public PacienteEntity getPaciente() {
-        return paciente;
-    }
-
-    public List<PacienteEntity> getPacientes() {
-        return pacientes;
-    }
 }
-

@@ -47,47 +47,20 @@ public class UsuarioController implements Serializable {
 
     public void salvar() {
         try {
-
-        	if (usuario.getId() == null) {
-
-        	    if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
-        	        addMensagemErro("Senha é obrigatória para novo usuário.");
-        	        return;
-        	    }
-
-        	    usuario.setDataCadastro(new Date());
-        	    
-
-        	    if (usuario.getPerfil() == null) {
-        	        usuario.setPerfil(PerfilUsuario.OPERADOR);
-        	    }
-        	}
-            else {
-
-                UsuarioEntity usuarioBanco = usuarioService.buscarPorId(usuario.getId());
-
-                // ✅ SE NÃO INFORMAR NOVA SENHA, MANTÉM A ANTIGA
-                if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
-                    usuario.setSenha(usuarioBanco.getSenha());
-                }
-
-                // ✅ SE NÃO ALTERAR O PERFIL NA EDIÇÃO, MANTÉM O ANTIGO
-                if (usuario.getPerfil() == null) {
-                    usuario.setPerfil(usuarioBanco.getPerfil());
-                }
-            }
-
             usuarioService.salvar(usuario);
 
             addMensagem("Usuário salvo com sucesso!");
             usuario = new UsuarioEntity();
             listar();
 
+        } catch (IllegalArgumentException e) {
+            addMensagemErro(e.getMessage()); // mostra regra direto
         } catch (Exception e) {
-            addMensagemErro("Erro ao salvar o usuário.");
+            addMensagemErro("Erro inesperado ao salvar o usuário.");
             e.printStackTrace();
         }
     }
+
 
 
     public void excluir(Long id) {
