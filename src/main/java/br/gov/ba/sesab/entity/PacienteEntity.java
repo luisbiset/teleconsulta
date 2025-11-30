@@ -4,202 +4,148 @@ import java.io.Serializable;
 import java.util.Date;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "paciente")
 public class PacienteEntity implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotBlank(message = "Nome é obrigatório")
-	@Size(min = 3, max = 150, message = "Nome deve ter entre 3 e 150 caracteres")
-	@Pattern(regexp = "^[A-Za-zÀ-ÿ]+( [A-Za-zÀ-ÿ]+)*$", message = "Nome não pode conter números, símbolos ou espaços duplicados")
-	@Column(nullable = false, length = 150)
-	private String nome;
+    @OneToOne
+    @JoinColumn(name = "id_usuario", nullable = false, unique = true)
+    private UsuarioEntity usuario;
 
-	@NotBlank(message = "CPF é obrigatório")
-	@Column(nullable = false, unique = true, length = 11)
-	private String cpf;
 
-	@NotBlank(message = "RG é obrigatório")
-	@Pattern(regexp = "\\d{10}", message = "RG deve conter 10 dígitos")
-	@Column(nullable = false, length = 20)
-	private String rg;
+    @NotBlank(message = "RG é obrigatório")
+    @Pattern(regexp = "\\d{10}", message = "RG deve conter 10 dígitos")
+    @Column(nullable = false, length = 10)
+    private String rg;
 
-	@NotBlank(message = "Telefone é obrigatório")
-	@Column(nullable = false, length = 11)
-	private String telefone;
+    @NotBlank(message = "Telefone é obrigatório")
+    @Size(min = 11, max = 11, message = "Telefone deve conter 11 dígitos")
+    @Column(nullable = false, length = 11)
+    private String telefone;
 
-	@NotNull(message = "Data de nascimento é obrigatória")
-	@Temporal(TemporalType.DATE)
-	@Column(name = "data_nascimento", nullable = false)
-	@PastOrPresent
-	private Date dataNascimento;
+    @NotNull(message = "Data de nascimento é obrigatória")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "data_nascimento", nullable = false)
+    @PastOrPresent
+    private Date dataNascimento;
 
-	@NotBlank(message = "Sexo é obrigatório")
-	@Column(nullable = false, length = 10)
-	private String sexo;
+    @NotBlank(message = "Sexo é obrigatório")
+    @Column(nullable = false, length = 10)
+    private String sexo;
 
-	@NotBlank(message = "Nome da mãe é obrigatório")
-	@Column(nullable = false, length = 150)
-	private String nomeMae;
+    @NotBlank(message = "Nome da mãe é obrigatório")
+    @Column(nullable = false, length = 150)
+    private String nomeMae;
 
-	@NotBlank(message = "Nome do pai é obrigatório")
-	@Column(nullable = false, length = 150)
-	private String nomePai;
+    @NotBlank(message = "Nome do pai é obrigatório")
+    @Column(nullable = false, length = 150)
+    private String nomePai;
 
-	@NotBlank(message = "Endereço é obrigatório")
-	@Column(nullable = false, length = 200)
-	private String endereco;
+    @NotBlank(message = "Endereço é obrigatório")
+    @Column(nullable = false, length = 200)
+    private String endereco;
 
-	// ✅ ÚNICO OPCIONAL
-	@Email(message = "Email inválido")
-	@Column(nullable = true, length = 150)
-	private String email;
+    private String nomeSocial;
 
-	// OPCIONAIS / COMPLEMENTARES
-	private String nomeSocial;
+    @NotBlank(message = "CNS é obrigatório")
+    @Pattern(regexp = "\\d{15}", message = "CNS deve conter 15 dígitos")
+    @Column(nullable = false, unique = true, length = 15)
+    private String cns;
 
-	@NotBlank(message = "CNS é obrigatório")
-	@Pattern(regexp = "\\d{15}", message = "CNS deve conter 15 dígitos")
-	@Column(nullable = false, unique = true, length = 15)
-	private String cns;
 
-	// ======================
-	// GETTERS / SETTERS
-	// ======================
+    public Long getId() {
+        return id;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public UsuarioEntity getUsuario() {
+        return usuario;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setUsuario(UsuarioEntity usuario) {
+        this.usuario = usuario;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public String getRg() {
+        return rg;
+    }
 
-	public void setNome(String nome) {
-		if (nome != null) {
-			this.nome = nome.trim().replaceAll("\\s+", " ");
-		} else {
-			this.nome = null;
-		}
-	}
+    public void setRg(String rg) {
+        this.rg = rg;
+    }
 
-	public String getNomeMae() {
-		return nomeMae;
-	}
+    public String getTelefone() {
+        return telefone;
+    }
 
-	public void setNomeMae(String nomeMae) {
-		if (nomeMae != null) {
-			this.nomeMae = nomeMae.trim().replaceAll("\\s+", " ");
-		} else {
-			this.nomeMae = null;
-		}
-	}
+    public void setTelefone(String telefone) {
+        if (telefone != null) {
+            this.telefone = telefone.replaceAll("\\D", "");
+        } else {
+            this.telefone = null;
+        }
+    }
 
-	public String getNomePai() {
-		return nomePai;
-	}
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
 
-	public void setNomePai(String nomePai) {
-		if (nomePai != null) {
-			this.nomePai = nomePai.trim().replaceAll("\\s+", " ");
-		} else {
-			this.nomePai = null;
-		}
-	}
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
 
-	public String getNomeSocial() {
-		return nomeSocial;
-	}
+    public String getSexo() {
+        return sexo;
+    }
 
-	public void setNomeSocial(String nomeSocial) {
-		if (nomeSocial != null) {
-			this.nomeSocial = nomeSocial.trim().replaceAll("\\s+", " ");
-		} else {
-			this.nomeSocial = null;
-		}
-	}
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
 
-	public String getCpf() {
-		return cpf;
-	}
+    public String getNomeMae() {
+        return nomeMae;
+    }
 
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
+    public void setNomeMae(String nomeMae) {
+        this.nomeMae = nomeMae;
+    }
 
-	public String getRg() {
-		return rg;
-	}
+    public String getNomePai() {
+        return nomePai;
+    }
 
-	public void setRg(String rg) {
-		this.rg = rg;
-	}
+    public void setNomePai(String nomePai) {
+        this.nomePai = nomePai;
+    }
 
-	public String getTelefone() {
-		return telefone;
-	}
+    public String getEndereco() {
+        return endereco;
+    }
 
-	public void setTelefone(String telefone) {
-		this.telefone = telefone;
-	}
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
 
-	public Date getDataNascimento() {
-		return dataNascimento;
-	}
+    public String getNomeSocial() {
+        return nomeSocial;
+    }
 
-	public void setDataNascimento(Date dataNascimento) {
-		this.dataNascimento = dataNascimento;
-	}
+    public void setNomeSocial(String nomeSocial) {
+        this.nomeSocial = nomeSocial;
+    }
 
-	public String getSexo() {
-		return sexo;
-	}
+    public String getCns() {
+        return cns;
+    }
 
-	public void setSexo(String sexo) {
-		this.sexo = sexo;
-	}
-
-	public String getEndereco() {
-		return endereco;
-	}
-
-	public void setEndereco(String endereco) {
-		if (endereco != null) {
-			this.endereco = endereco.trim().replaceAll("\\s+", " ");
-		} else {
-			this.endereco = null;
-		}
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getCns() {
-		return cns;
-	}
-
-	public void setCns(String cns) {
-		this.cns = cns;
-	}
+    public void setCns(String cns) {
+        this.cns = cns;
+    }
 }
