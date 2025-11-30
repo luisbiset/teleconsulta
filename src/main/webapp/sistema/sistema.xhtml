@@ -1,0 +1,51 @@
+<ui:composition template="/template/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="conteudo">
+
+        <h2>Sistema</h2>
+
+        <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:20px;">
+
+            <!-- PERFIL -->
+            <p:panel header="Meu Perfil" style="width:260px; text-align:center;">
+
+                <p>Visualize seus dados pessoais.</p>
+                <br/>
+
+                <p:button value="Acessar Perfil"
+                          icon="pi pi-user"
+                          outcome="/sistema/perfil.xhtml"/>
+            </p:panel>
+
+            <!-- ALTERAR SENHA -->
+            <p:panel header="Alterar Senha" style="width:260px; text-align:center;">
+
+                <p>Atualize sua senha de acesso.</p>
+                <br/>
+
+                <p:button value="Alterar"
+                          icon="pi pi-key"
+                          outcome="/sistema/senha.xhtml"/>
+            </p:panel>
+
+            <!-- SAIR -->
+            <p:panel header="Sair do Sistema" style="width:260px; text-align:center;">
+
+                <p>Encerrar a sessão atual.</p>
+                <br/>
+
+                <p:button value="Sair"
+                          icon="pi pi-sign-out"
+                          outcome="/login.xhtml"
+                          styleClass="ui-button-danger"/>
+            </p:panel>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

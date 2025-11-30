@@ -1,0 +1,46 @@
+<ui:composition template="/template/layout.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="jakarta.faces.facelets"
+    xmlns:h="jakarta.faces.html"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="conteudo">
+
+        <h2>Alterar Senha</h2>
+
+        <h:form id="formSenha">
+
+            <p:growl id="msgs" showDetail="true"/>
+
+            <p:panel header="Atualização de Senha" style="max-width:400px;">
+
+                <h:panelGrid columns="2" cellpadding="8">
+
+                    <h:outputLabel value="Senha Atual:"/>
+                    <p:password value="#{sistemaController.senhaAtual}"
+                                required="true"/>
+
+                    <h:outputLabel value="Nova Senha:"/>
+                    <p:password value="#{sistemaController.novaSenha}"
+                                required="true"/>
+
+                    <h:outputLabel value="Confirmar:"/>
+                    <p:password value="#{sistemaController.confirmarSenha}"
+                                required="true"/>
+
+                </h:panelGrid>
+
+                <br/>
+
+                <p:commandButton value="Salvar"
+                                 icon="pi pi-save"
+                                 action="#{sistemaController.alterarSenha}"
+                                 update="@form msgs"/>
+
+            </p:panel>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

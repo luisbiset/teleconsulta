@@ -17,64 +17,60 @@ public class UsuarioService {
 
 	@Inject
 	private UsuarioRepository usuarioRepository;
-	
+
 	@Inject
 	PacienteRepository pacienteRepository;
-	
-	
+
 	@Transactional
 	public void salvar(UsuarioEntity usuario) {
 
-	    UsuarioEntity logado = SessaoUtil.getUsuarioLogado();
+		UsuarioEntity logado = SessaoUtil.getUsuarioLogado();
 
-	    if (logado == null || logado.getPerfil() != PerfilUsuario.ADMIN) {
-	        throw new IllegalArgumentException("Apenas ADMIN pode salvar usuários.");
-	    }
+		if (logado == null || logado.getPerfil() != PerfilUsuario.ADMIN) {
+			throw new IllegalArgumentException("Apenas ADMIN pode salvar usuários.");
+		}
 
-	    if (usuario.getDataCadastro() == null) {
-	        usuario.setDataCadastro(new Date());
-	    }
+		if (usuario.getDataCadastro() == null) {
+			usuario.setDataCadastro(new Date());
+		}
 
-	    if (usuario.getId() == null) {
-	        if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
-	            throw new IllegalArgumentException("Senha é obrigatória para novo usuário.");
-	        }
+		if (usuario.getId() == null) {
+			if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
+				throw new IllegalArgumentException("Senha é obrigatória para novo usuário.");
+			}
 
-	        if (usuario.getPerfil() == null) {
-	            usuario.setPerfil(PerfilUsuario.ATENDENTE);
-	        }
-	    } 
-	    else {
-	        UsuarioEntity usuarioBanco = usuarioRepository.buscarPorId(usuario.getId());
+			if (usuario.getPerfil() == null) {
+				usuario.setPerfil(PerfilUsuario.ATENDENTE);
+			}
+		} else {
+			UsuarioEntity usuarioBanco = usuarioRepository.findById(usuario.getId());
 
-	        if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
-	            usuario.setSenha(usuarioBanco.getSenha());
-	        }
+			if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
+				usuario.setSenha(usuarioBanco.getSenha());
+			}
 
-	        if (usuario.getPerfil() == null) {
-	            usuario.setPerfil(usuarioBanco.getPerfil());
-	        }
-	    }
+			if (usuario.getPerfil() == null) {
+				usuario.setPerfil(usuarioBanco.getPerfil());
+			}
+		}
 
-	    UsuarioEntity existentePorEmail =
-	            usuarioRepository.buscarPorLogin(usuario.getEmail());
+		UsuarioEntity existentePorEmail = usuarioRepository.buscarPorLogin(usuario.getEmail());
 
-	    if (existentePorEmail != null &&
-	        (usuario.getId() == null || !existentePorEmail.getId().equals(usuario.getId()))) {
+		if (existentePorEmail != null
+				&& (usuario.getId() == null || !existentePorEmail.getId().equals(usuario.getId()))) {
 
-	        throw new IllegalArgumentException("Já existe um usuário cadastrado com este email.");
-	    }
+			throw new IllegalArgumentException("Já existe um usuário cadastrado com este email.");
+		}
 
-	    usuarioRepository.salvar(usuario);
+		usuarioRepository.salvar(usuario);
 	}
 
 	public List<UsuarioEntity> listarSolicitantes() {
-	    return usuarioRepository.listarUsuariosSolicitantes();
+		return usuarioRepository.listarUsuariosSolicitantes();
 	}
 
-
 	public UsuarioEntity buscarPorId(Long id) {
-		return usuarioRepository.buscarPorId(id);
+		return usuarioRepository.findById(id);
 	}
 
 	public UsuarioEntity buscarPorLogin(String login) {
@@ -88,30 +84,28 @@ public class UsuarioService {
 	@Transactional
 	public void excluir(Long id) {
 
-	    UsuarioEntity logado = SessaoUtil.getUsuarioLogado();
+		UsuarioEntity logado = SessaoUtil.getUsuarioLogado();
 
-	    if (logado == null || logado.getPerfil() != PerfilUsuario.ADMIN) {
-	        throw new RuntimeException("Apenas ADMIN pode excluir usuários.");
-	    }
+		if (logado == null || logado.getPerfil() != PerfilUsuario.ADMIN) {
+			throw new RuntimeException("Apenas ADMIN pode excluir usuários.");
+		}
 
-	    UsuarioEntity usuario = usuarioRepository.buscarPorId(id);
+		UsuarioEntity usuario = usuarioRepository.findById(id);
 
-	    if (usuario == null) {
-	        throw new RuntimeException("Usuário não encontrado.");
-	    }
+		if (usuario == null) {
+			throw new RuntimeException("Usuário não encontrado.");
+		}
 
-	    if (usuario.getPaciente() != null) {
-	        pacienteRepository.excluir(usuario.getPaciente().getId());
-	    }
+		if (usuario.getPaciente() != null) {
+			pacienteRepository.excluir(usuario.getPaciente().getId());
+		}
 
-	    usuarioRepository.excluir(id);
+		usuarioRepository.excluir(id);
 	}
 
-
-	 public UsuarioEntity buscarUsuarioPorCpf(String cpf) {
-	        return usuarioRepository.buscarPorCpf(cpf);
-	    }
-	
+	public UsuarioEntity buscarUsuarioPorCpf(String cpf) {
+		return usuarioRepository.buscarPorCpf(cpf);
+	}
 
 	public UsuarioEntity autenticar(String cpf, String senha) {
 		UsuarioEntity usuario = usuarioRepository.buscarPorCpf(cpf);
@@ -123,6 +117,25 @@ public class UsuarioService {
 		return null;
 	}
 
-	
+	public void alterarSenha(UsuarioEntity usuarioLogado, String senhaAtual, String novaSenha) {
+
+		if (usuarioLogado == null) {
+			throw new RuntimeException("Usuário não autenticado.");
+		}
+
+		UsuarioEntity usuario = usuarioRepository.findById(usuarioLogado.getId());
+
+		if (usuario == null) {
+			throw new RuntimeException("Usuário não encontrado.");
+		}
+
+		if (!usuario.getSenha().equals(senhaAtual)) {
+			throw new RuntimeException("Senha atual incorreta.");
+		}
+
+// Atualiza a senha
+		usuario.setSenha(novaSenha);
+		usuarioRepository.salvar(usuario);
+	}
 
 }
