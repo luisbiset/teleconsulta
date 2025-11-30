@@ -1,0 +1,106 @@
+<ui:composition template="/template/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="conteudo">
+
+		<h:form id="formSala">
+
+			<p:growl id="msgs" showDetail="true" />
+
+			<h2 style="margin-bottom: 20px;">Gerenciamento de Salas</h2>
+
+
+			<div class="barra-filtro">
+				<p:inputText value="#{salaController.filtroSala}"
+					placeholder="Buscar por Nome ou Unidade">
+
+					<p:ajax event="keyup" listener="#{salaController.filtrar}"
+						update="tabelaSalas" />
+				</p:inputText>
+
+				<p:commandButton icon="pi pi-times" process="@this"
+					update="tabelaSalas"
+					actionListener="#{salaController.limparFiltro}" />
+
+			</div>
+
+			<br />
+
+			<p:commandButton value="Nova Sala" icon="pi pi-plus" process="@this"
+				action="#{salaController.novo}" update=":formSala"
+				oncomplete="PF('dlgSala').show()" resetValues="true" />
+
+
+
+			<br />
+			<br />
+
+			<p:dataTable id="tabelaSalas" value="#{salaController.salas}" var="s"
+				paginator="true" rows="10" paginatorPosition="bottom">
+
+				<p:column headerText="Nome">
+					<h:outputText value="#{s.nome}" />
+				</p:column>
+
+				<p:column headerText="Capacidade">
+					<h:outputText value="#{s.capacidade}" />
+				</p:column>
+
+				<p:column headerText="Unidade">
+					<h:outputText value="#{s.unidade.nome}" />
+				</p:column>
+
+				<p:column headerText="Ações" style="width:150px; text-align:center;">
+
+					<p:commandButton icon="pi pi-pencil" process="@this"
+						update=":formSala" action="#{salaController.editar(s)}"
+						oncomplete="PF('dlgSala').show()" />
+
+					<p:commandButton icon="pi pi-trash" process="@this" update="@form"
+						action="#{salaController.excluir(s.id)}"
+						onclick="return confirm('Deseja excluir esta sala?');" />
+
+				</p:column>
+
+			</p:dataTable>
+
+			<p:dialog id="dlg" widgetVar="dlgSala" header="Cadastro de Sala"
+				modal="true">
+
+				<h:panelGrid columns="2" cellpadding="5">
+
+					<h:outputLabel value="Nome:" />
+					<p:inputText value="#{salaController.sala.nome}" required="true" />
+
+					<h:outputLabel value="Capacidade:" />
+					<p:inputText value="#{salaController.sala.capacidade}"
+						required="true" />
+
+					<h:outputLabel value="Unidade:" />
+					<p:selectOneMenu value="#{salaController.idUnidadeSelecionada}"
+						required="true" disabled="#{salaController.sala.id != null}">
+
+						<f:selectItem itemLabel="Selecione" itemValue="#{null}" />
+
+						<f:selectItems value="#{salaController.unidades}" var="u"
+							itemLabel="#{u.nome}" itemValue="#{u.id}" />
+					</p:selectOneMenu>
+
+
+
+				</h:panelGrid>
+
+				<br />
+
+				<p:commandButton value="Salvar" action="#{salaController.salvar}"
+					update="@form" oncomplete="PF('dlgSala').hide();" />
+
+			</p:dialog>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

@@ -197,7 +197,10 @@
         width: 100%;
     }
     
-    
+    .ui-state-disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
 }
 
 
