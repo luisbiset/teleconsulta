@@ -2,7 +2,7 @@ package br.gov.ba.sesab.util;
 
 import java.io.IOException;
 
-import br.gov.ba.sesab.controller.LoginController;
+import br.gov.ba.sesab.entity.UsuarioEntity;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,14 +23,26 @@ public class AuthFilter implements Filter {
         HttpServletRequest req  = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        String uri = req.getRequestURI();
+        // ✅ BLOQUEIA CACHE
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.setHeader("Pragma", "no-cache");
+        res.setDateHeader("Expires", 0);
 
-        // ✅ LIBERA LOGIN E RECURSOS
-        if (uri.endsWith("login.xhtml")
-                || uri.contains("jakarta.faces.resource")
-                || uri.contains("/resources/")
-                || uri.endsWith(".css")
-                || uri.endsWith(".js")) {
+        String uri = req.getRequestURI();
+        String ctx = req.getContextPath();
+
+        // ✅ TRANSFORMA EM CAMINHO RELATIVO
+        String path = uri.substring(ctx.length());
+
+        // ✅ LIBERA LOGIN E RECURSOS (DE FORMA 100% CONFIÁVEL)
+        if (path.startsWith("/login.xhtml")
+                || path.startsWith("/jakarta.faces.resource")
+                || path.startsWith("/resources")
+                || path.endsWith(".css")
+                || path.endsWith(".js")
+                || path.endsWith(".png")
+                || path.endsWith(".jpg")
+                || path.endsWith(".woff2")) {
 
             chain.doFilter(request, response);
             return;
@@ -38,21 +50,21 @@ public class AuthFilter implements Filter {
 
         HttpSession session = req.getSession(false);
 
-        LoginController login =
-            (session != null) ? (LoginController) session.getAttribute("loginController") : null;
+        UsuarioEntity usuario =
+            (session != null)
+                ? (UsuarioEntity) session.getAttribute("usuarioLogado")
+                : null;
 
-        if (login == null || !login.isLogado()) {
-            res.sendRedirect(req.getContextPath() + "/login.xhtml");
+        if (usuario == null) {
+            System.out.println(">>> AUTHFILTER: USUARIO NULO, REDIRECIONANDO");
+            res.sendRedirect(ctx + "/login.xhtml");
             return;
         }
 
-        if (uri.contains("/unidade/")) {
-            if (!login.isLogado()) {
-                res.sendRedirect(req.getContextPath() + "/login.xhtml");
-                return;
-            }
-        }
+        System.out.println(">>> AUTHFILTER: USUARIO OK: " + usuario.getCpf());
 
         chain.doFilter(request, response);
     }
 }
+
+

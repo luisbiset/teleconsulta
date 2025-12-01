@@ -5,16 +5,24 @@
 <h:head>
 	<title>Teleconsulta - Login</title>
 
-	<!-- CSS GLOBAL -->
+	<meta http-equiv="cache-control"
+		content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="expires" content="0" />
+
+
 	<h:outputStylesheet library="css" name="layout.css" />
 
-	<!-- CSS DO LOGIN -->
 	<h:outputStylesheet library="css" name="login.css" />
 </h:head>
 
 <h:body>
 
 	<f:view>
+	
+	 <f:metadata>
+        <f:viewParam name="nocache" value="true"/>
+    </f:metadata>
 
 		<h:form id="formLogin">
 
@@ -35,8 +43,9 @@
 					required="true" requiredMessage="Informe a senha" />
 
 				<p:commandButton value="Entrar" icon="pi pi-sign-in"
-					action="#{loginController.entrar}" update="formLogin msgs"
+					action="#{loginController.entrar}" ajax="false"
 					styleClass="login-button" />
+
 
 				<div class="footer">© 2025 - Sistema de Teleconsulta</div>
 

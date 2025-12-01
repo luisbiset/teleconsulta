@@ -1,21 +1,25 @@
 package br.gov.ba.sesab.controller;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import br.gov.ba.sesab.entity.UsuarioEntity;
-import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.service.UsuarioService;
+import br.gov.ba.sesab.util.SessaoUtil;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Named
 @SessionScoped
 public class LoginController implements Serializable {
 
-    private String cpf;
+    private static final long serialVersionUID = 1L;
+	private String cpf;
     private String senha;
 
     private UsuarioEntity usuarioLogado;
@@ -23,7 +27,7 @@ public class LoginController implements Serializable {
     @Inject
     private UsuarioService usuarioService;
 
-    public String entrar() {
+    public void entrar() {
 
         String cpfLimpo = cpf.replace(".", "").replace("-", "").trim();
         String senhaLimpa = senha.trim();
@@ -33,59 +37,98 @@ public class LoginController implements Serializable {
         if (usuario != null) {
             this.usuarioLogado = usuario;
 
-            FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getSessionMap()
-                .put("loginController", this);
+            HttpServletRequest request = (HttpServletRequest)
+                    FacesContext.getCurrentInstance()
+                            .getExternalContext()
+                            .getRequest();
 
-            FacesContext.getCurrentInstance()
-                .getExternalContext()
-                .getSessionMap()
-                .put("usuarioLogado", usuario);
+            HttpSession session = request.getSession(true);
+            session.setAttribute("usuarioLogado", usuario);
+            
+            System.out.println(">>> LOGIN: GRAVOU USUARIO NA SESSAO: " 
+            	    + usuario.getCpf() + " | SESSION ID: " + session.getId());
 
-            return "/menu/menu.xhtml?faces-redirect=true";
+            try {
+            	System.out.println(">>> LOGIN: REDIRECIONANDO PARA MENU");
+
+                FacesContext.getCurrentInstance()
+                        .getExternalContext()
+                        .redirect(request.getContextPath() + "/menu/menu.xhtml");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return;
         }
 
         FacesContext.getCurrentInstance().addMessage(null,
-            new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                "CPF ou senha inválidos", null));
-
-        return null;
+                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        "CPF ou senha inválidos", null));
     }
 
-    public boolean isAdmin() {
-        return usuarioLogado != null 
-            && usuarioLogado.getPerfil() == PerfilUsuario.ADMIN;
-    }
-    public String sair() {
-        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-        return "/login.xhtml?faces-redirect=true";
-    }
-    public String getCpf() {
-        return cpf;
+    public void sair() {
+
+        FacesContext context = FacesContext.getCurrentInstance();
+
+        HttpServletRequest request = (HttpServletRequest)
+                context.getExternalContext().getRequest();
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        this.usuarioLogado = null;
+        this.cpf = null;
+        this.senha = null;
+
+        try {
+            context.getExternalContext()
+                   .redirect(request.getContextPath() + "/login.xhtml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public UsuarioEntity getUsuarioLogado() {
-        return usuarioLogado;
-    }
-
-    public void setUsuarioLogado(UsuarioEntity usuarioLogado) {
-        this.usuarioLogado = usuarioLogado;
-    }
 
     public boolean isLogado() {
-        return usuarioLogado != null;
+        return SessaoUtil.getUsuarioLogado() != null;
     }
+
+
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	public UsuarioEntity getUsuarioLogado() {
+		return usuarioLogado;
+	}
+
+	public void setUsuarioLogado(UsuarioEntity usuarioLogado) {
+		this.usuarioLogado = usuarioLogado;
+	}
+
+	public UsuarioService getUsuarioService() {
+		return usuarioService;
+	}
+
+	public void setUsuarioService(UsuarioService usuarioService) {
+		this.usuarioService = usuarioService;
+	}
+    
+    
+
 }
+
