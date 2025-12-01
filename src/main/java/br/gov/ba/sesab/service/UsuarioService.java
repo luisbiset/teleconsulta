@@ -43,9 +43,8 @@ public class UsuarioService {
 			if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
 				throw new IllegalArgumentException("Senha é obrigatória para novo usuário.");
 			}
-			
-	        usuario.setSenha(PasswordUtil.hash(usuario.getSenha()));
 
+			usuario.setSenha(PasswordUtil.hash(usuario.getSenha()));
 
 			if (usuario.getPerfil() == null) {
 				usuario.setPerfil(PerfilUsuario.ATENDENTE);
@@ -56,7 +55,7 @@ public class UsuarioService {
 			if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
 				usuario.setSenha(usuarioBanco.getSenha());
 			} else {
-				
+
 				usuario.setSenha(PasswordUtil.hash(usuario.getSenha()));
 			}
 
@@ -120,31 +119,30 @@ public class UsuarioService {
 
 	public UsuarioEntity autenticar(String cpf, String senhaDigitada) {
 
-	    UsuarioEntity usuario = usuarioRepository.buscarPorCpf(cpf);
+		UsuarioEntity usuario = usuarioRepository.buscarPorCpf(cpf);
 
-	    if (usuario == null || usuario.getSenha() == null) {
-	        return null;
-	    }
+		if (usuario == null || usuario.getSenha() == null) {
+			return null;
+		}
 
-	    String senhaBanco = usuario.getSenha();
+		String senhaBanco = usuario.getSenha();
 
-	    if (!senhaBanco.startsWith("$2a$")) {
+		if (!senhaBanco.startsWith("$2a$")) {
 
-	        if (senhaBanco.equals(senhaDigitada)) {
-	            usuario.setSenha(PasswordUtil.hash(senhaDigitada));
-	            usuarioRepository.salvar(usuario);
-	            return usuario;
-	        }
+			if (senhaBanco.equals(senhaDigitada)) {
+				usuario.setSenha(PasswordUtil.hash(senhaDigitada));
+				usuarioRepository.salvar(usuario);
+				return usuario;
+			}
 
-	    } 
-	    else {
+		} else {
 
-	        if (PasswordUtil.verificar(senhaDigitada, senhaBanco)) {
-	            return usuario;
-	        }
-	    }
+			if (PasswordUtil.verificar(senhaDigitada, senhaBanco)) {
+				return usuario;
+			}
+		}
 
-	    return null; 
+		return null;
 	}
 
 	public void validarAdmin() {
@@ -167,12 +165,11 @@ public class UsuarioService {
 			throw new RuntimeException("Usuário não encontrado.");
 		}
 
-		if (!usuario.getSenha().equals(senhaAtual)) {
+		if (!PasswordUtil.verificar(senhaAtual, usuario.getSenha())) {
 			throw new RuntimeException("Senha atual incorreta.");
 		}
 
-// Atualiza a senha
-		usuario.setSenha(novaSenha);
+		usuario.setSenha(PasswordUtil.hash(novaSenha));
 		usuarioRepository.salvar(usuario);
 	}
 

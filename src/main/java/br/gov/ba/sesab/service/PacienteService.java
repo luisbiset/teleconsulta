@@ -8,112 +8,120 @@ import br.gov.ba.sesab.entity.PacienteEntity;
 import br.gov.ba.sesab.entity.UsuarioEntity;
 import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.repository.PacienteRepository;
+import br.gov.ba.sesab.repository.ReservaRepository;
 import br.gov.ba.sesab.repository.UsuarioRepository;
+import br.gov.ba.sesab.util.PasswordUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class PacienteService {
+public class PacienteService extends AbstractService {
 
-    @Inject
-    private PacienteRepository pacienteRepository;
-    
-    @Inject UsuarioRepository usuarioRepository;
+	@Inject
+	private PacienteRepository pacienteRepository;
 
-  
-    
-    @Transactional
-    public void salvar(PacienteEntity paciente) {
-        pacienteRepository.salvar(paciente);
-    }
+	@Inject
+	UsuarioRepository usuarioRepository;
 
-    @Transactional
-    public void salvarComUsuario(PacienteEntity paciente) {
+	@Inject
+	private ReservaRepository reservaRepository;
 
-        UsuarioEntity usuarioTela = paciente.getUsuario();
+	@Transactional
+	public void salvarComUsuario(PacienteEntity paciente) {
 
-        if (usuarioTela == null) {
-            throw new IllegalArgumentException("Usuário é obrigatório.");
-        }
+	    UsuarioEntity usuarioTela = paciente.getUsuario();
 
-        if (usuarioTela.getCpf() == null || usuarioTela.getCpf().isBlank()) {
-            throw new IllegalArgumentException("CPF é obrigatório.");
-        }
+	    String cpfLimpo = usuarioTela.getCpf().replaceAll("\\D", "");
+	    usuarioTela.setCpf(cpfLimpo);
 
-        String cpfLimpo = usuarioTela.getCpf().replaceAll("\\D", "");
-        usuarioTela.setCpf(cpfLimpo);
+	    if (paciente.getId() == null) {
 
-        UsuarioEntity usuarioExistente =
-                usuarioRepository.buscarPorCpf(cpfLimpo);
+	        UsuarioEntity usuarioPorCpf =
+	                usuarioRepository.buscarPorCpf(cpfLimpo);
 
-        if (paciente.getId() == null) {
+	        if (usuarioPorCpf != null) {
+	            throw new RuntimeException("Já existe um usuário cadastrado com este CPF.");
+	        }
 
-            if (usuarioExistente != null) {
+	        UsuarioEntity usuarioPorEmail =
+	                usuarioRepository.buscarPorLogin(usuarioTela.getEmail());
 
-            	if (usuarioExistente.getPaciente() != null) {
-            	    throw new RuntimeException("Já existe um paciente com esse CPF.");
-            	}
+	        if (usuarioPorEmail != null) {
+	            throw new RuntimeException("Já existe um usuário cadastrado com este email.");
+	        }
 
-                usuarioExistente.setNome(usuarioTela.getNome());
-                usuarioExistente.setEmail(usuarioTela.getEmail());
-                usuarioExistente.setAtivo(usuarioTela.isAtivo());
+	        usuarioTela.setSenha(PasswordUtil.hash(UUID.randomUUID().toString()));
+	        usuarioTela.setPerfil(PerfilUsuario.PACIENTE);
+	        usuarioTela.setAtivo(false);
+	        usuarioTela.setDataCadastro(new Date());
 
-                paciente.setUsuario(usuarioExistente);
+	        usuarioRepository.salvar(usuarioTela);
+	        paciente.setUsuario(usuarioTela);
+	    }
+	    else {
 
-            } else {
+	        PacienteEntity pacienteBanco =
+	                pacienteRepository.findById(paciente.getId());
 
-                usuarioTela.setSenha(UUID.randomUUID().toString());
-                usuarioTela.setPerfil(PerfilUsuario.PACIENTE);
-                usuarioTela.setAtivo(false);
-                usuarioTela.setDataCadastro(new Date());
+	        if (pacienteBanco == null) {
+	            throw new RuntimeException("Paciente não encontrado.");
+	        }
 
-                // ✅ SALVA PRIMEIRO O USUÁRIO
-                usuarioRepository.salvar(usuarioTela);
+	        UsuarioEntity usuarioBanco = pacienteBanco.getUsuario();
 
-                paciente.setUsuario(usuarioTela);
-            }
-
-        } else {
-            PacienteEntity pacienteBanco =
-                    pacienteRepository.findById(paciente.getId());
-
-            if (pacienteBanco == null) {
-                throw new RuntimeException("Paciente não encontrado.");
-            }
-
-            paciente.setUsuario(pacienteBanco.getUsuario());
-        }
-
-        pacienteRepository.salvar(paciente);
-    }
-    
-    public PacienteEntity findById(Long id) {
-    	
-    	return pacienteRepository.findById(id);
-    }
+	        usuarioBanco.setNome(usuarioTela.getNome());
+	        usuarioBanco.setEmail(usuarioTela.getEmail());
+	        usuarioBanco.setAtivo(usuarioTela.isAtivo());
+	        usuarioBanco.setPerfil(PerfilUsuario.PACIENTE);
 
 
-    @Transactional
-    public void excluir(Long idPaciente) {
+	        paciente.setUsuario(usuarioBanco);
 
-        PacienteEntity paciente = pacienteRepository.findById(idPaciente);
+	        usuarioRepository.salvar(usuarioBanco);
+	    }
 
-        if (paciente == null) {
-            throw new RuntimeException("Paciente não encontrado.");
-        }
+	    pacienteRepository.salvar(paciente);
+	}
 
-        pacienteRepository.excluir(idPaciente);
-    }
 
-    public List<PacienteEntity> listarTodos() {
-        return pacienteRepository.listarTodos();
-    }
+	public PacienteEntity findById(Long id) {
+
+		return pacienteRepository.findById(id);
+	}
+
+	@Transactional
+	public void excluir(Long idPaciente) {
+
+		validarAdmin();
+
+		PacienteEntity paciente = pacienteRepository.findById(idPaciente);
+
+		if (paciente == null) {
+			throw new RuntimeException("Paciente não encontrado.");
+		}
+
+		if (reservaRepository.existeReservaPorPaciente(idPaciente)) {
+			throw new RuntimeException("Não é possível excluir o paciente pois existem reservas vinculadas.");
+		}
+
+		UsuarioEntity usuario = paciente.getUsuario();
+
+		pacienteRepository.excluir(idPaciente);
+
+		if (usuario != null) {
+			usuarioRepository.excluir(usuario.getId());
+		}
+	}
+
+	public List<PacienteEntity> listarTodos() {
+		return pacienteRepository.listarTodos();
+	}
 
 	
 
 	public PacienteEntity findByUsuario(Long id) {
-		
+
 		return pacienteRepository.findByUsuario(id);
 	}
 }

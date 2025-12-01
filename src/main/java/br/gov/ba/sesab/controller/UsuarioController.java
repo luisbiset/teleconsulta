@@ -2,11 +2,9 @@ package br.gov.ba.sesab.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import br.gov.ba.sesab.entity.UsuarioEntity;
-import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.service.UsuarioService;
 import br.gov.ba.sesab.util.SessaoUtil;
 import jakarta.annotation.PostConstruct;
@@ -47,14 +45,25 @@ public class UsuarioController implements Serializable {
 
     public void salvar() {
         try {
+        	
+        	 if (usuario.getId() == null) {
+        	        usuario.setSenha(novaSenha);
+        	    } else {
+        	        if (novaSenha != null && !novaSenha.isBlank()) {
+        	            usuario.setSenha(novaSenha);
+        	        } else {
+        	            usuario.setSenha(null); 
+        	        }
+        	    }
             usuarioService.salvar(usuario);
+            novaSenha =null;
 
             addMensagem("Usuário salvo com sucesso!");
             usuario = new UsuarioEntity();
             listar();
 
         } catch (IllegalArgumentException e) {
-            addMensagemErro(e.getMessage()); // mostra regra direto
+            addMensagemErro(e.getMessage()); 
         } catch (Exception e) {
             addMensagemErro("Erro inesperado ao salvar o usuário.");
             e.printStackTrace();

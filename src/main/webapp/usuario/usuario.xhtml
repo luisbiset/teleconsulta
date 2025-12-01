@@ -67,7 +67,8 @@
 				</p:column>
 
 
-				<p:column headerText="Ações" rendered="#{usuarioController.admin}" style="width:120px; text-align:center;">
+				<p:column headerText="Ações" rendered="#{usuarioController.admin}"
+					style="width:120px; text-align:center;">
 
 					<p:commandButton icon="pi pi-pencil" process="@this"
 						update=":formUsuario:dlg" action="#{usuarioController.editar(u)}"
@@ -90,8 +91,8 @@
 			<p:dialog id="dlg" widgetVar="dlgUsuario"
 				header="#{usuarioController.usuario.id == null 
                     ? 'Cadastrar Usuário' 
-                    : 'Editar Usuário'}" modal="true" closable="true"
-				resizable="false">
+                    : 'Editar Usuário'}"
+				modal="true" closable="true" resizable="false">
 
 				<h:panelGrid columns="2" cellpadding="5">
 
@@ -109,29 +110,43 @@
 						onblur="this.value = this.value.trim()" />
 
 					<h:outputLabel value="CPF:" for="cpf" />
-					<p:inputMask id="cpf"
-						value="#{usuarioController.usuario.cpf}"
+					<p:inputMask id="cpf" value="#{usuarioController.usuario.cpf}"
 						mask="999.999.999-99" converter="cpfConverter"
 						required="#{usuarioController.usuario.id == null}"
-						requiredMessage="CPF é obrigatório"
+						autoClear="false" requiredMessage="CPF é obrigatório"
 						readonly="#{usuarioController.usuario.id != null}" />
 
 
 
-					<h:outputLabel value="Perfil:" for="perfil" />
-					<p:selectOneMenu id="perfil"
-						value="#{usuarioController.usuario.perfil}" required="true"
-						requiredMessage="Perfil é obrigatório" style="width:100%">
+					<h:outputLabel value="Perfil:" />
 
-						<f:selectItem itemLabel="Selecione" itemValue="#{null}"
-							noSelectionOption="true" />
-						<f:selectItem itemLabel="Administrador" itemValue="ADMIN" />
-						<f:selectItem itemLabel="Atendente" itemValue="ATENDENTE" />
+					<h:panelGroup>
 
-					</p:selectOneMenu>
+						<!-- PERFIL SOMENTE LEITURA PARA PACIENTE -->
+						<p:inputText
+							rendered="#{usuarioController.usuario.perfil eq 'PACIENTE'}"
+							value="PACIENTE" readonly="true"
+							styleClass="ui-inputfield campo-bloqueado" style="width:100%" />
+
+						<!-- PERFIL EDITÁVEL PARA OUTROS -->
+						<p:selectOneMenu
+							rendered="#{usuarioController.usuario.perfil ne 'PACIENTE'}"
+							value="#{usuarioController.usuario.perfil}" required="true"
+							requiredMessage="Perfil é obrigatório" style="width:100%">
+
+							<f:selectItem itemLabel="Selecione" itemValue="#{null}"
+								noSelectionOption="true" />
+
+							<f:selectItem itemLabel="Administrador" itemValue="ADMIN" />
+							<f:selectItem itemLabel="Atendente" itemValue="ATENDENTE" />
+
+						</p:selectOneMenu>
+
+					</h:panelGroup>
+
 
 					<h:outputLabel value="Senha:" for="senha" />
-					<p:password id="senha" value="#{usuarioController.usuario.senha}"
+					<p:password id="senha" value="#{usuarioController.novaSenha}"
 						required="#{usuarioController.usuario.id == null}"
 						requiredMessage="Senha é obrigatória no cadastro" feedback="true"
 						promptLabel="Digite a senha" weakLabel="Fraca" goodLabel="Boa"

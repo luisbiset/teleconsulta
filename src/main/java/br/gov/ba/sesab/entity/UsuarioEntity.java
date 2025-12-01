@@ -36,7 +36,8 @@ public class UsuarioEntity implements Serializable {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "data_cadastro")
 	private Date dataCadastro;
-
+	
+	@Size(min = 6)
 	@Column(nullable = false)
 	private String senha;
 

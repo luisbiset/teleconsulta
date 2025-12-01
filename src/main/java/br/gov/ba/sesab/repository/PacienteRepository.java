@@ -3,61 +3,62 @@ package br.gov.ba.sesab.repository;
 import java.util.List;
 
 import br.gov.ba.sesab.entity.PacienteEntity;
-import br.gov.ba.sesab.util.HibernateUtil;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 
 @ApplicationScoped
 public class PacienteRepository {
 
-	public void salvar(PacienteEntity paciente) {
-	    EntityManager em = HibernateUtil.getEntityManager();
-	    try {
-	        em.getTransaction().begin();
-	        em.merge(paciente);   // ✅ SEM persist
-	        em.getTransaction().commit();
-	    } finally {
-	        em.close();
-	    }
-	}
+    @Inject
+    private EntityManager em;
+
+    public void salvar(PacienteEntity paciente) {
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+
+            if (paciente.getId() == null) {
+                em.persist(paciente);   
+            } else {
+                em.merge(paciente);     
+            }
+
+            tx.commit();
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        }
+    }
 
 
     public void excluir(Long id) {
-        EntityManager em = HibernateUtil.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            em.getTransaction().begin();
+            tx.begin();
             PacienteEntity p = em.find(PacienteEntity.class, id);
             if (p != null) em.remove(p);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
+            tx.commit();
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
         }
     }
 
-    public List<PacienteEntity> listarTodos() {
-        EntityManager em = HibernateUtil.getEntityManager();
-        try {
-            return em.createQuery(
-                "SELECT p FROM PacienteEntity p ORDER BY p.id",
-                PacienteEntity.class
-            ).getResultList();
-        } finally {
-            em.close();
-        }
-    }
-    
     public PacienteEntity findById(Long id) {
-        EntityManager em = HibernateUtil.getEntityManager();
-        try {
-            return em.find(PacienteEntity.class, id);
-        } finally {
-            em.close();
-        }
+        return em.find(PacienteEntity.class, id);
     }
-    
+
+    public List<PacienteEntity> listarTodos() {
+        return em.createQuery(
+            "SELECT p FROM PacienteEntity p ORDER BY p.id",
+            PacienteEntity.class
+        ).getResultList();
+    }
+
     public PacienteEntity findByUsuario(Long idUsuario) {
-    	EntityManager em = HibernateUtil.getEntityManager();
         try {
             return em.createQuery(
                 "SELECT p FROM PacienteEntity p WHERE p.usuario.id = :idUsuario",
@@ -69,8 +70,5 @@ public class PacienteRepository {
             return null;
         }
     }
-
 }
-
-
 

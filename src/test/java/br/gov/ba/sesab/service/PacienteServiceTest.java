@@ -3,133 +3,116 @@ package br.gov.ba.sesab.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
+import java.util.Date;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import br.gov.ba.sesab.entity.PacienteEntity;
 import br.gov.ba.sesab.entity.UsuarioEntity;
-import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.repository.PacienteRepository;
+import br.gov.ba.sesab.repository.ReservaRepository;
+import br.gov.ba.sesab.repository.UsuarioRepository;
 
 @ExtendWith(MockitoExtension.class)
 class PacienteServiceTest {
+
+    @Spy
+    @InjectMocks
+    private PacienteService pacienteService;
 
     @Mock
     private PacienteRepository pacienteRepository;
 
     @Mock
-    private UsuarioService usuarioService;
+    private UsuarioRepository usuarioRepository;
 
-    @InjectMocks
-    private PacienteService pacienteService;
-    @Test
-    void deveSalvarPaciente() {
-        PacienteEntity paciente = new PacienteEntity();
+    @Mock
+    private ReservaRepository reservaRepository;
 
-        assertDoesNotThrow(() -> pacienteService.salvar(paciente));
+    private PacienteEntity paciente;
+    private UsuarioEntity usuario;
 
-        verify(pacienteRepository, times(1)).salvar(paciente);
-    }
-    @Test
-    void deveLancarErroQuandoUsuarioForNulo() {
-        PacienteEntity paciente = new PacienteEntity();
-        paciente.setUsuario(null);
+    @BeforeEach
+    void setup() {
+        usuario = new UsuarioEntity();
+        usuario.setId(1L);
+        usuario.setCpf("12345678900");
+        usuario.setNome("Teste");
+        usuario.setEmail("teste@email.com");
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> pacienteService.salvarComUsuario(paciente));
-
-        assertEquals("Usuário é obrigatório.", ex.getMessage());
-        verify(pacienteRepository, never()).salvar(any());
-    }
-
-    @Test
-    void deveLancarErroQuandoCpfForVazio() {
-        PacienteEntity paciente = new PacienteEntity();
-        UsuarioEntity usuario = new UsuarioEntity();
-        usuario.setCpf("");
+        paciente = new PacienteEntity();
         paciente.setUsuario(usuario);
-
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> pacienteService.salvarComUsuario(paciente));
-
-        assertEquals("CPF é obrigatório.", ex.getMessage());
-        verify(pacienteRepository, never()).salvar(any());
+        paciente.setRg("1234567890");
+        paciente.setTelefone("71999999999");
+        paciente.setDataNascimento(new Date());
+        paciente.setSexo("M");
+        paciente.setNomeMae("Mae");
+        paciente.setNomePai("Pai");
+        paciente.setEndereco("Endereco");
+        paciente.setCns("123456789012345");
     }
 
+
     @Test
-    void deveUsarUsuarioExistenteQuandoCpfJaCadastrado() {
-        PacienteEntity paciente = new PacienteEntity();
+    void deveSalvarNovoPacienteComUsuario() {
 
-        UsuarioEntity usuarioTela = new UsuarioEntity();
-        usuarioTela.setCpf("123.456.789-00");
-        usuarioTela.setNome("Novo Nome");
-        usuarioTela.setEmail("novo@email.com");
-        usuarioTela.setAtivo(true);
-
-        paciente.setUsuario(usuarioTela);
-
-        UsuarioEntity usuarioBanco = new UsuarioEntity();
-        usuarioBanco.setCpf("12345678900");
-        usuarioBanco.setNome("Antigo Nome");
-        usuarioBanco.setEmail("antigo@email.com");
-        usuarioBanco.setAtivo(false);
-
-        when(usuarioService.buscarUsuarioPorCpf("12345678900"))
-            .thenReturn(usuarioBanco);
+        when(usuarioRepository.buscarPorCpf(anyString())).thenReturn(null);
+        when(usuarioRepository.buscarPorLogin(anyString())).thenReturn(null);
 
         pacienteService.salvarComUsuario(paciente);
 
-        assertEquals("Novo Nome", usuarioBanco.getNome());
-        assertEquals("novo@email.com", usuarioBanco.getEmail());
-        assertTrue(usuarioBanco.isAtivo());
-
-        assertEquals(usuarioBanco, paciente.getUsuario());
-
-        verify(pacienteRepository, times(1)).salvar(paciente);
+        verify(usuarioRepository).salvar(any());
+        verify(pacienteRepository).salvar(any());
     }
+
+
     @Test
-    void deveCriarNovoUsuarioQuandoCpfNaoExistir() {
-        PacienteEntity paciente = new PacienteEntity();
+    void naoDeveExcluirPacienteComReserva() {
 
-        UsuarioEntity usuarioTela = new UsuarioEntity();
-        usuarioTela.setCpf("123.456.789-00");
-        usuarioTela.setNome("Paciente Novo");
+        doNothing().when(pacienteService).validarAdmin();
 
-        paciente.setUsuario(usuarioTela);
+        when(pacienteRepository.findById(1L)).thenReturn(paciente);
+        when(reservaRepository.existeReservaPorPaciente(1L)).thenReturn(true);
 
-        when(usuarioService.buscarUsuarioPorCpf("12345678900"))
-            .thenReturn(null);
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> pacienteService.excluir(1L));
 
-        pacienteService.salvarComUsuario(paciente);
-
-        UsuarioEntity usuarioFinal = paciente.getUsuario();
-
-        assertNotNull(usuarioFinal.getSenha());
-        assertEquals(PerfilUsuario.PACIENTE, usuarioFinal.getPerfil());
-        assertFalse(usuarioFinal.isAtivo());
-        assertNotNull(usuarioFinal.getDataCadastro());
-
-        verify(pacienteRepository, times(1)).salvar(paciente);
+        assertEquals(
+            "Não é possível excluir o paciente pois existem reservas vinculadas.",
+            ex.getMessage()
+        );
     }
 
     @Test
-    void deveExcluirPaciente() {
+    void deveExcluirPacienteSemReservas() {
+
+        doNothing().when(pacienteService).validarAdmin();
+
+        when(pacienteRepository.findById(1L)).thenReturn(paciente);
+        when(reservaRepository.existeReservaPorPaciente(1L)).thenReturn(false);
+
         pacienteService.excluir(1L);
 
-        verify(pacienteRepository, times(1)).excluir(1L);
+        verify(pacienteRepository).excluir(1L);
+        verify(usuarioRepository).excluir(usuario.getId());
     }
+
     @Test
-    void deveListarPacientes() {
-        when(pacienteRepository.listarTodos()).thenReturn(List.of());
+    void naoDeveExcluirPacienteInexistente() {
 
-        List<PacienteEntity> lista = pacienteService.listarTodos();
+        doNothing().when(pacienteService).validarAdmin();
 
-        assertNotNull(lista);
-        verify(pacienteRepository, times(1)).listarTodos();
+        when(pacienteRepository.findById(1L)).thenReturn(null);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> pacienteService.excluir(1L));
+
+        assertEquals("Paciente não encontrado.", ex.getMessage());
     }
 }

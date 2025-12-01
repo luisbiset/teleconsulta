@@ -19,6 +19,7 @@ import jakarta.inject.Named;
 @ViewScoped
 public class PacienteController implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private PacienteEntity paciente;
 	private List<PacienteEntity> pacientes;
 	private List<PacienteEntity> pacientesFiltrados;
@@ -114,18 +115,28 @@ public class PacienteController implements Serializable {
 	            )
 	        );
 
+	    } catch (RuntimeException e) { 
+	        FacesContext.getCurrentInstance().addMessage(null,
+	            new FacesMessage(
+	                FacesMessage.SEVERITY_WARN,
+	                e.getMessage(),
+	                null
+	            )
+	        );
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 
 	        FacesContext.getCurrentInstance().addMessage(null,
 	            new FacesMessage(
 	                FacesMessage.SEVERITY_ERROR,
-	                "Erro ao excluir paciente.",
+	                "Erro inesperado ao excluir paciente.",
 	                null
 	            )
 	        );
 	    }
 	}
+
 
 	public PacienteEntity getPaciente() {
 		if (paciente == null)
@@ -169,4 +180,6 @@ public class PacienteController implements Serializable {
 		this.filtroPaciente = filtroPaciente;
 	}
 
+	
+	
 }
