@@ -1,48 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
                                  https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
-	version="3.0">
+             version="3.0">
 
-	<persistence-unit name="teleconsultaPU"
-		transaction-type="RESOURCE_LOCAL">
-		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <persistence-unit name="teleconsultaPU" transaction-type="RESOURCE_LOCAL">
 
-		<properties>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-			<!-- ========================= -->
-			<!-- CONEXÃO COM SQLITE -->
-			<!-- ========================= -->
-			<property name="jakarta.persistence.jdbc.driver"
-				value="org.sqlite.JDBC" />
-			<property name="jakarta.persistence.jdbc.url"
-				value="jdbc:sqlite:/home/luisbiset/eclipse-workspace/teleconsultas/teleconsulta.db" />
-			<property name="jakarta.persistence.jdbc.user" value="" />
-			<property name="jakarta.persistence.jdbc.password" value="" />
+        <properties>
 
-			<!-- ========================= -->
-			<!-- HIBERNATE -->
-			<!-- ========================= -->
-			<property name="hibernate.dialect"
-				value="org.hibernate.community.dialect.SQLiteDialect" />
-			<property name="hibernate.hbm2ddl.auto" value="update" />
-			<property name="hibernate.show_sql" value="true" />
-			<property name="hibernate.format_sql" value="true" />
+            <!-- ========================= -->
+            <!-- CONEXÃO COM SQLITE -->
+            <!-- ========================= -->
+            <property name="jakarta.persistence.jdbc.driver"
+                      value="org.sqlite.JDBC"/>
 
-			<property name="hibernate.archive.autodetection"
-				value="class" />
+            <property name="jakarta.persistence.jdbc.url"
+          value="jdbc:sqlite:/home/luisbiset/eclipse-workspace/teleconsultas/teleconsulta.db"/>
 
-			<!-- ========================= -->
-			<!-- PERFORMANCE -->
-			<!-- ========================= -->
-			<property name="hibernate.jdbc.batch_size" value="20" />
-			<property name="hibernate.order_inserts" value="true" />
-			<property name="hibernate.order_updates" value="true" />
+            <property name="jakarta.persistence.jdbc.user" value=""/>
+            <property name="jakarta.persistence.jdbc.password" value=""/>
 
-		</properties>
+            <!-- ========================= -->
+            <!-- HIBERNATE -->
+            <!-- ========================= -->
+            <property name="hibernate.dialect"
+                      value="org.hibernate.community.dialect.SQLiteDialect"/>
 
-	</persistence-unit>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
 
+            <property name="hibernate.hbm2ddl.import_files"
+                      value="import.sql"/>
+
+            <property name="hibernate.show_sql" value="true"/>
+
+            <property name="hibernate.format_sql"
+                      value="true"/>
+
+            <!-- ========================= -->
+            <!-- CONTROLE DE CONEXÃO -->
+            <!-- ========================= -->
+            <property name="hibernate.connection.autocommit" value="false"/>
+            <property name="hibernate.connection.pool_size" value="1"/>
+
+            <!-- ========================= -->
+            <!-- PERFORMANCE -->
+            <!-- ========================= -->
+            <property name="hibernate.jdbc.batch_size" value="20"/>
+            <property name="hibernate.order_inserts" value="true"/>
+            <property name="hibernate.order_updates" value="true"/>
+
+        </properties>
+
+    </persistence-unit>
 
 </persistence>
