@@ -23,9 +23,6 @@ public class LoginController implements Serializable {
     @Inject
     private UsuarioService usuarioService;
 
-    // ============================
-    // AÇÃO DE LOGIN
-    // ============================
     public String entrar() {
 
         String cpfLimpo = cpf.replace(".", "").replace("-", "").trim();
@@ -36,13 +33,11 @@ public class LoginController implements Serializable {
         if (usuario != null) {
             this.usuarioLogado = usuario;
 
-            // ✅ MANTÉM COMPATIBILIDADE COM O QUE JÁ EXISTE
             FacesContext.getCurrentInstance()
                 .getExternalContext()
                 .getSessionMap()
                 .put("loginController", this);
 
-            // ✅ TAMBÉM SALVA O USUÁRIO DIRETAMENTE (PARA SERVICE, ETC.)
             FacesContext.getCurrentInstance()
                 .getExternalContext()
                 .getSessionMap()
@@ -62,18 +57,10 @@ public class LoginController implements Serializable {
         return usuarioLogado != null 
             && usuarioLogado.getPerfil() == PerfilUsuario.ADMIN;
     }
-
-    // ============================
-    // LOGOUT
-    // ============================
     public String sair() {
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
         return "/login.xhtml?faces-redirect=true";
     }
-
-    // ============================
-    // GETTERS E SETTERS
-    // ============================
     public String getCpf() {
         return cpf;
     }

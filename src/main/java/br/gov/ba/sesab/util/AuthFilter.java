@@ -41,19 +41,18 @@ public class AuthFilter implements Filter {
         LoginController login =
             (session != null) ? (LoginController) session.getAttribute("loginController") : null;
 
-        // ✅ BLOQUEIA SE NÃO ESTIVER LOGADO
         if (login == null || !login.isLogado()) {
             res.sendRedirect(req.getContextPath() + "/login.xhtml");
             return;
         }
 
-        // 🔒 BLOQUEIO ESPECÍFICO: UNIDADE SÓ PARA ADMIN
-        if (uri.contains("/unidade/") && !login.isAdmin()) {
-            res.sendRedirect(req.getContextPath() + "/menu/menu.xhtml");
-            return;
+        if (uri.contains("/unidade/")) {
+            if (!login.isLogado()) {
+                res.sendRedirect(req.getContextPath() + "/login.xhtml");
+                return;
+            }
         }
 
-        // ✅ SEGUE O FLUXO NORMAL
         chain.doFilter(request, response);
     }
 }
