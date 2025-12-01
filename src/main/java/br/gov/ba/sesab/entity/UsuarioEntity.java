@@ -46,9 +46,11 @@ public class UsuarioEntity implements Serializable {
 
 	@Column(nullable = false)
 	private boolean ativo = true;
-
+	
+	
 	@OneToOne(mappedBy = "usuario")
 	private PacienteEntity paciente;
+
 ;
 
 

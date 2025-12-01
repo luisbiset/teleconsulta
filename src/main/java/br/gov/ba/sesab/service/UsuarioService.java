@@ -6,7 +6,9 @@ import java.util.List;
 import br.gov.ba.sesab.entity.UsuarioEntity;
 import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.repository.PacienteRepository;
+import br.gov.ba.sesab.repository.ReservaRepository;
 import br.gov.ba.sesab.repository.UsuarioRepository;
+import br.gov.ba.sesab.util.PasswordUtil;
 import br.gov.ba.sesab.util.SessaoUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -20,6 +22,9 @@ public class UsuarioService {
 
 	@Inject
 	PacienteRepository pacienteRepository;
+
+	@Inject
+	private ReservaRepository reservaRepository;
 
 	@Transactional
 	public void salvar(UsuarioEntity usuario) {
@@ -38,6 +43,9 @@ public class UsuarioService {
 			if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
 				throw new IllegalArgumentException("Senha é obrigatória para novo usuário.");
 			}
+			
+	        usuario.setSenha(PasswordUtil.hash(usuario.getSenha()));
+
 
 			if (usuario.getPerfil() == null) {
 				usuario.setPerfil(PerfilUsuario.ATENDENTE);
@@ -47,6 +55,9 @@ public class UsuarioService {
 
 			if (usuario.getSenha() == null || usuario.getSenha().isBlank()) {
 				usuario.setSenha(usuarioBanco.getSenha());
+			} else {
+				
+				usuario.setSenha(PasswordUtil.hash(usuario.getSenha()));
 			}
 
 			if (usuario.getPerfil() == null) {
@@ -84,16 +95,16 @@ public class UsuarioService {
 	@Transactional
 	public void excluir(Long id) {
 
-		UsuarioEntity logado = SessaoUtil.getUsuarioLogado();
-
-		if (logado == null || logado.getPerfil() != PerfilUsuario.ADMIN) {
-			throw new RuntimeException("Apenas ADMIN pode excluir usuários.");
-		}
+		validarAdmin();
 
 		UsuarioEntity usuario = usuarioRepository.findById(id);
 
 		if (usuario == null) {
 			throw new RuntimeException("Usuário não encontrado.");
+		}
+
+		if (reservaRepository.existeReservaPorUsuario(id)) {
+			throw new RuntimeException("Não é possível excluir o usuário pois existem reservas associadas.");
 		}
 
 		if (usuario.getPaciente() != null) {
@@ -107,14 +118,41 @@ public class UsuarioService {
 		return usuarioRepository.buscarPorCpf(cpf);
 	}
 
-	public UsuarioEntity autenticar(String cpf, String senha) {
-		UsuarioEntity usuario = usuarioRepository.buscarPorCpf(cpf);
+	public UsuarioEntity autenticar(String cpf, String senhaDigitada) {
 
-		if (usuario != null && usuario.getSenha().trim().equals(senha.trim())) {
-			return usuario;
+	    UsuarioEntity usuario = usuarioRepository.buscarPorCpf(cpf);
+
+	    if (usuario == null || usuario.getSenha() == null) {
+	        return null;
+	    }
+
+	    String senhaBanco = usuario.getSenha();
+
+	    if (!senhaBanco.startsWith("$2a$")) {
+
+	        if (senhaBanco.equals(senhaDigitada)) {
+	            usuario.setSenha(PasswordUtil.hash(senhaDigitada));
+	            usuarioRepository.salvar(usuario);
+	            return usuario;
+	        }
+
+	    } 
+	    else {
+
+	        if (PasswordUtil.verificar(senhaDigitada, senhaBanco)) {
+	            return usuario;
+	        }
+	    }
+
+	    return null; 
+	}
+
+	public void validarAdmin() {
+		UsuarioEntity logado = SessaoUtil.getUsuarioLogado();
+
+		if (logado == null || logado.getPerfil() != PerfilUsuario.ADMIN) {
+			throw new RuntimeException("Ação permitida apenas para ADMIN.");
 		}
-
-		return null;
 	}
 
 	public void alterarSenha(UsuarioEntity usuarioLogado, String senhaAtual, String novaSenha) {

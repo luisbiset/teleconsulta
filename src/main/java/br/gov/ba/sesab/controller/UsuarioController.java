@@ -65,14 +65,42 @@ public class UsuarioController implements Serializable {
 
     public void excluir(Long id) {
         try {
+
             usuarioService.excluir(id);
-            addMensagem("Usuário excluído com sucesso!");
             listar();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(
+                    FacesMessage.SEVERITY_INFO,
+                    "Usuário excluído com sucesso!",
+                    null
+                )
+            );
+
+        } catch (RuntimeException e) {  
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(
+                    FacesMessage.SEVERITY_WARN,
+                    e.getMessage(),   
+                    null
+                )
+            );
+
         } catch (Exception e) {
-            addMensagemErro("Erro ao excluir o usuário.");
+
             e.printStackTrace();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Erro inesperado ao excluir usuário.",
+                    null
+                )
+            );
         }
     }
+
 
     public void editar(UsuarioEntity u) {
         this.usuario = u;
