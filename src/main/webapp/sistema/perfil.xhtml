@@ -1,0 +1,33 @@
+<ui:composition template="/template/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets"
+	xmlns:h="jakarta.faces.html" xmlns:f="jakarta.faces.core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="conteudo">
+
+		<h2>Meu Perfil</h2>
+
+		<p:panel header="Dados do Usuário" style="max-width:500px;">
+
+			<h:panelGrid columns="2" cellpadding="8">
+
+				<h:outputLabel value="Nome:" />
+				<h:outputText value="#{sistemaController.usuario.nome}" />
+
+				<h:outputLabel value="Email:" />
+				<h:outputText value="#{sistemaController.usuario.email}" />
+
+				<h:outputLabel value="CPF:" />
+				<h:outputText value="#{sistemaController.usuario.cpf}" />
+
+				<h:outputLabel value="Data de Cadastro:" />
+				<h:outputText value="#{sistemaController.usuario.dataCadastro}"
+					/>
+
+			</h:panelGrid>
+
+		</p:panel>
+
+	</ui:define>
+
+</ui:composition>

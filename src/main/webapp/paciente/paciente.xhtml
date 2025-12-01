@@ -80,7 +80,7 @@
 						action="#{pacienteController.editar(p)}"
 						oncomplete="PF('dlgPaciente').show()" />
 
-					<p:commandButton icon="pi pi-trash" process="@this"
+					<p:commandButton icon="pi pi-trash" rendered="#{usuarioController.admin}" process="@this"
 						update="tabelaPacientes :formFiltroPaciente:msgs"
 						action="#{pacienteController.excluir(p.id)}"
 						onclick="return confirm('Deseja excluir este paciente?');" />
@@ -89,7 +89,9 @@
 			</p:dataTable>
 
 			<p:dialog id="dlg" widgetVar="dlgPaciente"
-				header="Cadastro de Paciente" modal="true" closable="true"
+				header="#{pacienteController.paciente.id == null 
+                    ? 'Cadastrar Paciente' 
+                    : 'Editar Paciente'}" modal="true" closable="true"
 				resizable="false" draggable="false" width="480"
 				style="max-height:90vh; overflow:hidden;">
 				<h:panelGroup layout="block"

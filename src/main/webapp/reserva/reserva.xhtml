@@ -5,25 +5,47 @@
 
 	<ui:define name="conteudo">
 
+		<h:form id="formFiltroReserva">
+
+			<p:growl id="msgsFiltro" showDetail="false" life="3000" />
+
+			<h2 style="margin-bottom: 30px;">Gerenciamento de Reservas</h2>
+
+			<div class="barra-filtro">
+				<div class="campo-filtro">
+					<i class="pi pi-search icone-pesquisa" />
+
+					<p:inputText id="filtroReserva" value="#{reservaController.filtro}"
+						placeholder="Buscar por usuário, sala ou unidade">
+
+						<p:ajax event="keyup" listener="#{reservaController.filtrar}"
+							update=":formReserva:tabelaReservas" />
+					</p:inputText>
+
+					<p:commandButton icon="pi pi-times" styleClass="botao-limpar"
+						process="@this" actionListener="#{reservaController.limparFiltro}"
+						update=":formReserva:tabelaReservas"
+						onclick="document.getElementById('formFiltroReserva:filtroReserva').value='';" />
+				</div>
+
+				<p:commandButton value="Nova Reserva" icon="pi pi-plus"
+					action="#{reservaController.novo}"
+					update=":formReserva:dlg :formReserva:msgs"
+					oncomplete="PF('dlgReserva').show()" />
+			</div>
+
+		</h:form>
+
+		<!-- ================= TABELA ================= -->
 		<h:form id="formReserva">
 
 			<p:growl id="msgs" showDetail="false" />
 
-			<h2 style="margin-bottom: 20px;">Gerenciamento de Reservas</h2>
-
-			<p:commandButton value="Nova Reserva" icon="pi pi-plus"
-				action="#{reservaController.novo}" update=":formReserva:dlg msgs"
-				oncomplete="PF('dlgReserva').show()" />
-
-
-			<br />
-			<br />
-
-			<!-- ================= TABELA ================= -->
-			<p:dataTable value="#{reservaController.reservas}" var="r"
+			<p:dataTable id="tabelaReservas"
+				value="#{reservaController.reservasFiltradas}" var="r"
 				paginator="true" rows="10" paginatorPosition="bottom">
 
-				<p:column headerText="Solicitante">
+				<p:column headerText="Usuario">
 					<h:outputText value="#{r.usuarioSolicitante.nome}" />
 				</p:column>
 
@@ -31,11 +53,9 @@
 					<h:outputText value="#{r.sala.unidade.nome}" />
 				</p:column>
 
-
 				<p:column headerText="Sala">
 					<h:outputText value="#{r.sala.nome}" />
 				</p:column>
-
 
 				<p:column headerText="Início">
 					<h:outputText value="#{r.dataInicio}"
@@ -47,60 +67,64 @@
 						converter="localDateTimeConverter" />
 				</p:column>
 
-
 				<p:column headerText="Ações" style="width:140px;text-align:center">
 
 					<p:commandButton icon="pi pi-pencil" process="@this"
-						update=":formReserva:dlg msgs"
+						update=":formReserva:dlg :formReserva:msgs"
 						action="#{reservaController.editar(r)}"
 						oncomplete="PF('dlgReserva').show()" />
 
 					<p:commandButton icon="pi pi-trash" process="@this"
-						update="@form msgs" action="#{reservaController.excluir(r.id)}"
-						onclick="return confirm('Deseja cancelar esta reserva?');" />
+						update=":formReserva:tabelaReservas :formFiltroReserva:msgsFiltro"
+						action="#{reservaController.excluir(r.id)}">
+
+						<p:confirm header="Confirmação"
+							message="Deseja cancelar esta reserva?"
+							icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
+
 
 				</p:column>
 
 			</p:dataTable>
+
 			<p:dialog id="dlg" widgetVar="dlgReserva"
-				header="Cadastro de Reserva" modal="true" width="650"
+				header="#{reservaController.reserva.id == null 
+                    ? 'Cadastrar Reserva' 
+                    : 'Editar Reserva'}" modal="true" width="650"
 				closable="true">
 
 				<div style="display: flex; flex-direction: column; gap: 16px;">
 
-					<!-- CPF -->
 					<div style="display: flex; align-items: center;">
 						<div style="width: 180px; font-weight: 600;">CPF do Usuário:</div>
-						<p:inputMask mask="999.999.999-99"
-             style="flex:1;"
-             value="#{reservaController.cpfSolicitante}"
-             disabled="#{reservaController.modoEdicao}">
+						<p:inputMask mask="999.999.999-99" style="flex:1;"
+							value="#{reservaController.cpfSolicitante}"
+							disabled="#{reservaController.modoEdicao}">
+
+							<p:ajax event="keyup"
+								listener="#{reservaController.buscarUsuarioPorCpf}"
+								update="nomeSolicitante msgs" />
+
 						</p:inputMask>
 					</div>
 
-					<!-- SOLICITANTE -->
 					<div style="display: flex; align-items: center;">
 						<div style="width: 180px; font-weight: 600;">Solicitante:</div>
 						<p:inputText id="nomeSolicitante"
-							style="flex:1;
-                            height:42px;
-                            padding:8px 12px;
-                            box-sizing:border-box;
-                            background-color:#f5f5f5;
-                            border:1px solid #ccc;
-                            color:#555;
-                            cursor:not-allowed;"
+							style="flex:1; height:42px; padding:8px 12px;
+                                   background-color:#f5f5f5;
+                                   border:1px solid #ccc;
+                                   color:#555; cursor:not-allowed;"
 							value="#{reservaController.reserva.usuarioSolicitante.nome}"
 							readonly="true" />
 					</div>
 
-					<!-- UNIDADE -->
 					<div style="display: flex; align-items: center;">
 						<div style="width: 180px; font-weight: 600;">Unidade:</div>
 						<p:selectOneMenu value="#{reservaController.idUnidadeSelecionada}"
 							style="flex:1;" required="true"
 							disabled="#{reservaController.modoEdicao}">
-
 
 							<f:selectItem itemLabel="Selecione" itemValue="#{null}" />
 							<f:selectItems value="#{reservaController.unidades}" var="u"
@@ -111,13 +135,11 @@
 						</p:selectOneMenu>
 					</div>
 
-					<!-- SALA (DEPENDE DA UNIDADE) -->
 					<div style="display: flex; align-items: center;">
 						<div style="width: 180px; font-weight: 600;">Sala:</div>
 						<p:selectOneMenu id="comboSala"
 							value="#{reservaController.idSalaSelecionada}" style="flex:1;"
 							required="true" disabled="#{reservaController.modoEdicao}">
-
 
 							<f:selectItem itemLabel="Selecione" itemValue="#{null}" />
 							<f:selectItems value="#{reservaController.salasDaUnidade}"
@@ -125,7 +147,6 @@
 						</p:selectOneMenu>
 					</div>
 
-					<!-- INÍCIO -->
 					<div style="display: flex; align-items: center;">
 						<div style="width: 180px; font-weight: 600;">Início:</div>
 						<p:datePicker value="#{reservaController.reserva.dataInicio}"
@@ -133,7 +154,6 @@
 							required="true" converter="localDateTimeConverter" />
 					</div>
 
-					<!-- TÉRMINO -->
 					<div style="display: flex; align-items: center;">
 						<div style="width: 180px; font-weight: 600;">Término:</div>
 						<p:datePicker value="#{reservaController.reserva.dataFim}"
@@ -143,24 +163,26 @@
 
 				</div>
 
-				<!-- BOTÕES -->
 				<div
 					style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px;">
 
 					<p:commandButton value="Salvar" icon="pi pi-save"
-						action="#{reservaController.salvar}" update=":formReserva msgs"
-						oncomplete="PF('dlgReserva').hide();" />
+						action="#{reservaController.salvar}"
+						update=":formReserva:tabelaReservas :formReserva:msgs" />
 
 					<p:commandButton value="Cancelar" icon="pi pi-times"
 						onclick="PF('dlgReserva').hide(); return false;"
 						styleClass="ui-button-secondary" />
 				</div>
 
-
 			</p:dialog>
 
-
-
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+			</p:confirmDialog>
 
 		</h:form>
 

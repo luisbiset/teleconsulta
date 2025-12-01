@@ -18,9 +18,7 @@
 
 					<p:inputText id="filtroUnidade"
 						value="#{unidadeSaudeController.filtroUnidade}"
-						placeholder="Buscar por Nome, CNPJ ou CNES"
-
->
+						placeholder="Buscar por Nome, CNPJ ou CNES">
 						<p:ajax event="keyup" listener="#{unidadeSaudeController.filtrar}"
 							update=":formUnidade:tabelaUnidades" />
 					</p:inputText>
@@ -76,15 +74,22 @@
 
 					<p:commandButton icon="pi pi-trash" style="margin-left:5px"
 						process="@this" update=":formUnidade :formFiltroUnidade:msgs"
-						action="#{unidadeSaudeController.excluir(u.id)}"
-						onclick="return confirm('Deseja excluir esta unidade?');" />
+						action="#{unidadeSaudeController.excluir(u.id)}">
+
+						<p:confirm header="Confirmação"
+							message="Deseja excluir esta unidade?"
+							icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
+
 
 				</p:column>
 
 			</p:dataTable>
 
 			<p:dialog id="dlg" widgetVar="dlgUnidade"
-				header="Cadastro de Unidade" modal="true" closable="true"
+				header="#{unidadeSaudeController.unidade.id == null 
+                    ? 'Cadastrar Unidade' 
+                    : 'Editar Unidade'}" modal="true" closable="true"
 				resizable="false">
 
 				<h:panelGrid columns="2" cellpadding="5">
@@ -134,6 +139,13 @@
 					rendered="#{loginController.admin}" />
 
 			</p:dialog>
+
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+			</p:confirmDialog>
 
 		</h:form>
 

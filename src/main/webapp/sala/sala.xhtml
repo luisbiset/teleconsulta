@@ -7,7 +7,7 @@
 
 		<h:form id="formSala">
 
-			<p:growl id="msgs" showDetail="true" />
+			<p:growl id="msgs" showDetail="false" />
 
 			<h2 style="margin-bottom: 20px;">Gerenciamento de Salas</h2>
 
@@ -30,6 +30,7 @@
 
 			<p:commandButton value="Nova Sala" icon="pi pi-plus" process="@this"
 				action="#{salaController.novo}" update=":formSala"
+				rendered="#{loginController.admin}"
 				oncomplete="PF('dlgSala').show()" resetValues="true" />
 
 
@@ -52,21 +53,36 @@
 					<h:outputText value="#{s.unidade.nome}" />
 				</p:column>
 
-				<p:column headerText="Ações" style="width:150px; text-align:center;">
+				<p:column headerText="Ações" rendered="#{loginController.admin}" style="width:150px; text-align:center;">
 
 					<p:commandButton icon="pi pi-pencil" process="@this"
 						update=":formSala" action="#{salaController.editar(s)}"
 						oncomplete="PF('dlgSala').show()" />
 
-					<p:commandButton icon="pi pi-trash" process="@this" update="@form"
+					<p:commandButton icon="pi pi-trash" process="@this"
 						action="#{salaController.excluir(s.id)}"
-						onclick="return confirm('Deseja excluir esta sala?');" />
+						update=":formSala:tabelaSalas :formSala:msgs">
+
+						<p:confirm header="Confirmação"
+							message="Deseja excluir esta sala?"
+							icon="pi pi-exclamation-triangle" />
+					</p:commandButton>
 
 				</p:column>
 
+
 			</p:dataTable>
 
-			<p:dialog id="dlg" widgetVar="dlgSala" header="Cadastro de Sala"
+			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+			</p:confirmDialog>
+
+			<p:dialog id="dlg" widgetVar="dlgSala" header="#{salaController.sala.id == null 
+                    ? 'Cadastrar Sala' 
+                    : 'Editar Sala'}"
 				modal="true">
 
 				<h:panelGrid columns="2" cellpadding="5">
@@ -87,7 +103,6 @@
 						<f:selectItems value="#{salaController.unidades}" var="u"
 							itemLabel="#{u.nome}" itemValue="#{u.id}" />
 					</p:selectOneMenu>
-
 
 
 				</h:panelGrid>
