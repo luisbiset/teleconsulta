@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import br.gov.ba.sesab.entity.UsuarioEntity;
+import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.service.UsuarioService;
 import br.gov.ba.sesab.util.SessaoUtil;
 import jakarta.enterprise.context.SessionScoped;
@@ -35,6 +36,13 @@ public class LoginController extends AbstractController implements Serializable 
         UsuarioEntity usuario = usuarioService.autenticar(cpfLimpo, senhaLimpa);
 
         if (usuario != null) {
+        	
+        	  if (usuario.getPerfil() == PerfilUsuario.PACIENTE) {
+                  FacesContext.getCurrentInstance().addMessage(null,
+                      new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                              "Acesso negado: pacientes não possuem acesso ao sistema.", null));
+                  return;
+              }
             this.usuarioLogado = usuario;
 
             HttpServletRequest request = (HttpServletRequest)

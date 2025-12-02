@@ -122,13 +122,11 @@
 
 					<h:panelGroup>
 
-						<!-- PERFIL SOMENTE LEITURA PARA PACIENTE -->
 						<p:inputText
 							rendered="#{usuarioController.usuario.perfil eq 'PACIENTE'}"
 							value="PACIENTE" readonly="true"
 							styleClass="ui-inputfield campo-bloqueado" style="width:100%" />
 
-						<!-- PERFIL EDITÁVEL PARA OUTROS -->
 						<p:selectOneMenu
 							rendered="#{usuarioController.usuario.perfil ne 'PACIENTE'}"
 							value="#{usuarioController.usuario.perfil}" required="true"
@@ -145,9 +143,10 @@
 					</h:panelGroup>
 
 
-					<h:outputLabel value="Senha:" for="senha" />
+					<h:outputLabel value="Senha:" for="senha" rendered="#{usuarioController.usuario.perfil ne 'PACIENTE'}" />
 					<p:password id="senha" value="#{usuarioController.novaSenha}"
 						required="#{usuarioController.usuario.id == null}"
+						rendered="#{usuarioController.usuario.perfil ne 'PACIENTE'}"
 						requiredMessage="Senha é obrigatória no cadastro" feedback="true"
 						promptLabel="Digite a senha" weakLabel="Fraca" goodLabel="Boa"
 						strongLabel="Forte" />
