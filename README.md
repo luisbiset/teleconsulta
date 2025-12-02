@@ -21,7 +21,7 @@ Antes de iniciar, instale:
 
 - ## Como rodar o projeto:
 
-1. Clone este repositorio para o seu ambiente local:
+1. Clonar este repositório para o seu ambiente local:
 ```bash
 git clone https://github.com/luisbiset/teleconsulta.git
 cd teleconsulta
