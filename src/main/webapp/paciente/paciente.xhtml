@@ -82,7 +82,9 @@
 
 					<p:commandButton icon="pi pi-trash" process="@this"
 						update=":formPaciente:tabelaPacientes :formFiltroPaciente:msgs"
+						rendered="#{usuarioController.admin}"
 						action="#{pacienteController.excluir(p.id)}">
+						
 						<p:confirm header="Confirmação"
 							message="Deseja excluir este usuário?"
 							icon="pi pi-exclamation-triangle" />

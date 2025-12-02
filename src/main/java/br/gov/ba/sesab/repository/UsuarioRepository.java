@@ -77,7 +77,8 @@ public class UsuarioRepository {
             throw e;
         }
     }
-
+    
+    //Exigido para o desafio
     public UsuarioEntity buscarPorCpf(String cpf) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<UsuarioEntity> cq = cb.createQuery(UsuarioEntity.class);
