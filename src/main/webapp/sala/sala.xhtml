@@ -88,17 +88,17 @@
 				<h:panelGrid columns="2" cellpadding="5">
 
 					<h:outputLabel value="Nome:" />
-					<p:inputText value="#{salaController.sala.nome}" required="true" />
+					<p:inputText value="#{salaController.sala.nome}" required="true" requiredMessage="Informe o nome da sala." />
 
 					<h:outputLabel value="Capacidade:" />
 					<p:inputText value="#{salaController.sala.capacidade}"
-						required="true" />
+						required="true" requiredMessage="Informe a capacidade da sala." />
 
 					<h:outputLabel value="Unidade:" />
 					<p:selectOneMenu value="#{salaController.idUnidadeSelecionada}"
 						required="true" disabled="#{salaController.sala.id != null}">
 
-						<f:selectItem itemLabel="Selecione" itemValue="#{null}" />
+						<f:selectItem itemLabel="Selecione" itemValue="#{null}" requiredMessage="Selecione uma unidade." />
 
 						<f:selectItems value="#{salaController.unidades}" var="u"
 							itemLabel="#{u.nome}" itemValue="#{u.id}" />

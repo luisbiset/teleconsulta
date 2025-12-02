@@ -17,7 +17,7 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class SalaController implements Serializable {
+public class SalaController extends AbstractController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -50,17 +50,13 @@ public class SalaController implements Serializable {
     public void salvar() {
         try {
 
-            // EDIÇÃO: mantém a unidade original
             if (sala.getId() != null) {
-                // garante que a unidade já está preenchida na entidade sala (via edição)
-                // se quiser garantir:
                 if (sala.getUnidade() == null || sala.getUnidade().getId() == null) {
                     addMensagemErro("Unidade da sala não encontrada.");
                     return;
                 }
 
             } 
-            // NOVO CADASTRO: exige unidade selecionada
             else {
 
                 if (idUnidadeSelecionada == null) {
@@ -68,7 +64,6 @@ public class SalaController implements Serializable {
                     return;
                 }
 
-                // 👉 NÃO VAMOS MAIS NO BANCO
                 UnidadeSaudeEntity unidadeRef = new UnidadeSaudeEntity();
                 unidadeRef.setId(idUnidadeSelecionada);
                 sala.setUnidade(unidadeRef);
@@ -94,14 +89,40 @@ public class SalaController implements Serializable {
 
     public void excluir(Long id) {
         try {
+
             salaService.excluir(id);
-            addMensagem("Sala excluída com sucesso!");
             listar();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(
+                    FacesMessage.SEVERITY_INFO,
+                    "Sala excluída com sucesso!",
+                    null
+                )
+            );
+
+        } catch (RuntimeException e) { 
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(
+                    FacesMessage.SEVERITY_WARN,
+                    e.getMessage(), 
+                    null
+                )
+            );
+
         } catch (Exception e) {
-            addMensagemErro("Erro ao excluir a sala.");
             e.printStackTrace();
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Erro inesperado ao excluir sala.",
+                    null
+                )
+            );
         }
     }
+
 
     public void editar(SalaEntity s) {
         this.sala = s;

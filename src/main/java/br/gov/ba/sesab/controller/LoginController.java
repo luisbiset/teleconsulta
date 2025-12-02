@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Named
 @SessionScoped
-public class LoginController implements Serializable {
+public class LoginController extends AbstractController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 	private String cpf;
@@ -89,8 +89,8 @@ public class LoginController implements Serializable {
             e.printStackTrace();
         }
     }
-
-
+    
+    
     public boolean isLogado() {
         return SessaoUtil.getUsuarioLogado() != null;
     }
