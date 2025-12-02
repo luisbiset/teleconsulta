@@ -65,6 +65,10 @@
 							timeZone="America/Sao_Paulo" />
 					</h:outputText>
 				</p:column>
+				
+				<p:column headerText="Perfil">
+					<h:outputText value="#{u.perfil}" />
+				</p:column>
 
 
 				<p:column headerText="Ações" rendered="#{usuarioController.admin}"

@@ -11,9 +11,7 @@
 
         <properties>
 
-            <!-- ========================= -->
-            <!-- CONEXÃO COM SQLITE -->
-            <!-- ========================= -->
+           
             <property name="jakarta.persistence.jdbc.driver"
                       value="org.sqlite.JDBC"/>
 

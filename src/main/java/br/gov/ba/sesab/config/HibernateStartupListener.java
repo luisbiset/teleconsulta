@@ -6,6 +6,9 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @WebListener
 public class HibernateStartupListener implements ServletContextListener {
 
@@ -13,9 +16,34 @@ public class HibernateStartupListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("🚀 Inicializando Hibernate no startup...");
-        emf = Persistence.createEntityManagerFactory("teleconsultaPU");
-        System.out.println("✅ Hibernate inicializado com sucesso!");
+        System.out.println("🚀 Inicializando Hibernate...");
+
+        Map<String, Object> props = new HashMap<>();
+
+        String env = System.getenv("APP_ENV");
+
+        if ("docker".equalsIgnoreCase(env)) {
+
+            String sqlitePath = System.getenv("SQLITE_PATH");
+            String dbName     = System.getenv("SQLITE_FILENAME");
+
+            String dbUrl = "jdbc:sqlite:" + sqlitePath + "/" + dbName;
+
+            props.put("jakarta.persistence.jdbc.url", dbUrl);
+            props.put("hibernate.hbm2ddl.auto", "create");
+            props.put("hibernate.show_sql", "true");
+            props.put("hibernate.format_sql", "true");
+
+            System.out.println("📌 Ambiente: DOCKER");
+            System.out.println("📌 Banco: " + dbUrl);
+
+        } else {
+
+            System.out.println("📌 Ambiente: LOCAL");
+            System.out.println("📌 Usando JDBC definido no persistence.xml");
+        }
+
+        emf = Persistence.createEntityManagerFactory("teleconsultaPU", props);
     }
 
     @Override

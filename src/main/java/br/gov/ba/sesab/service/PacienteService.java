@@ -114,12 +114,13 @@ public class PacienteService extends AbstractService {
 		if (paciente == null) {
 			throw new RuntimeException("Paciente não encontrado.");
 		}
+		
+		UsuarioEntity usuario = paciente.getUsuario();
 
-		if (reservaRepository.existeReservaPorPaciente(idPaciente)) {
+		if (reservaRepository.existeReservaPorUsuario(paciente.getUsuario().getId())) {
+
 			throw new RuntimeException("Não é possível excluir o paciente pois existem reservas vinculadas.");
 		}
-
-		UsuarioEntity usuario = paciente.getUsuario();
 
 		pacienteRepository.excluir(idPaciente);
 
