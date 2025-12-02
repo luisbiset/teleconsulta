@@ -23,7 +23,6 @@ public class AuthFilter implements Filter {
         HttpServletRequest req  = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
-        // ✅ BLOQUEIA CACHE
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         res.setHeader("Pragma", "no-cache");
         res.setDateHeader("Expires", 0);
@@ -31,10 +30,8 @@ public class AuthFilter implements Filter {
         String uri = req.getRequestURI();
         String ctx = req.getContextPath();
 
-        // ✅ TRANSFORMA EM CAMINHO RELATIVO
         String path = uri.substring(ctx.length());
 
-        // ✅ LIBERA LOGIN E RECURSOS (DE FORMA 100% CONFIÁVEL)
         if (path.startsWith("/login.xhtml")
                 || path.startsWith("/jakarta.faces.resource")
                 || path.startsWith("/resources")
@@ -42,6 +39,7 @@ public class AuthFilter implements Filter {
                 || path.endsWith(".js")
                 || path.endsWith(".png")
                 || path.endsWith(".jpg")
+                || path.contains("keepSessionAlive")
                 || path.endsWith(".woff2")) {
 
             chain.doFilter(request, response);
@@ -61,7 +59,6 @@ public class AuthFilter implements Filter {
             return;
         }
 
-        System.out.println(">>> AUTHFILTER: USUARIO OK: " + usuario.getCpf());
 
         chain.doFilter(request, response);
     }

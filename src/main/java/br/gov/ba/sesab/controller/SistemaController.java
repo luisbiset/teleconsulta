@@ -13,7 +13,7 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class SistemaController implements Serializable {
+public class SistemaController extends AbstractController implements Serializable {
 
 	@Inject
 	private UsuarioService usuarioService;

@@ -21,7 +21,8 @@
         <welcome-file>login.xhtml</welcome-file>
     </welcome-file-list>
     
-    <session-config>
+   <session-config>
+    <session-timeout>60</session-timeout>
     <cookie-config>
         <http-only>true</http-only>
         <secure>false</secure>
