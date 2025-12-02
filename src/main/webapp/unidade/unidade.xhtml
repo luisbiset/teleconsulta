@@ -120,12 +120,14 @@
 						value="#{unidadeSaudeController.unidade.cnpj}"
 						mask="99.999.999/9999-99" required="true"
 						converter="cnpjConverter" requiredMessage="CNPJ é obrigatório"
+						autoClear="false"
 						readonly="#{unidadeSaudeController.unidade.id != null}" />
 
 					<h:outputLabel value="CNES:" for="cnes" />
 					<p:inputMask id="cnes"
 						value="#{unidadeSaudeController.unidade.cnes}" mask="9999999"
 						required="true" requiredMessage="CNES é obrigatório"
+						autoClear="false"
 						readonly="#{unidadeSaudeController.unidade.id != null}" />
 
 				</h:panelGrid>

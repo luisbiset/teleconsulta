@@ -15,7 +15,7 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class UnidadeSaudeController implements Serializable {
+public class UnidadeSaudeController extends AbstractController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
