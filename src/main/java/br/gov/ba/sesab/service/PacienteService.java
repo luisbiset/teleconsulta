@@ -50,6 +50,20 @@ public class PacienteService extends AbstractService {
 	        if (usuarioPorEmail != null) {
 	            throw new RuntimeException("Já existe um usuário cadastrado com este email.");
 	        }
+	        
+	        if (paciente.getCns() == null || paciente.getCns().isBlank()) {
+	            throw new RuntimeException("O CNS do paciente é obrigatório.");
+	        }
+
+	        PacienteEntity pacientePorCns =
+	                pacienteRepository.buscarPorCns(paciente.getCns());
+
+	        if (pacientePorCns != null &&
+	            (paciente.getId() == null ||
+	             !pacientePorCns.getId().equals(paciente.getId()))) {
+
+	            throw new RuntimeException("Já existe um paciente cadastrado com este CNS.");
+	        }
 
 	        usuarioTela.setSenha(PasswordUtil.hash(UUID.randomUUID().toString()));
 	        usuarioTela.setPerfil(PerfilUsuario.PACIENTE);

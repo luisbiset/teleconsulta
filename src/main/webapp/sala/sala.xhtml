@@ -96,7 +96,8 @@
 
 					<h:outputLabel value="Unidade:" />
 					<p:selectOneMenu value="#{salaController.idUnidadeSelecionada}"
-						required="true" disabled="#{salaController.sala.id != null}">
+						required="true" disabled="#{salaController.sala.id != null}"
+						 requiredMessage="Selecione uma unidade.">
 
 						<f:selectItem itemLabel="Selecione" itemValue="#{null}" requiredMessage="Selecione uma unidade." />
 

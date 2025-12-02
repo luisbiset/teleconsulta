@@ -5,19 +5,23 @@ import java.util.List;
 
 import br.gov.ba.sesab.entity.ReservaEntity;
 import br.gov.ba.sesab.entity.SalaEntity;
+import br.gov.ba.sesab.entity.UsuarioEntity;
+import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.repository.ReservaRepository;
+import br.gov.ba.sesab.util.SessaoUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ReservaService {
 
     @Inject
-    private ReservaRepository repository;
+    private ReservaRepository reservaRepository;
 
     public void salvar(ReservaEntity reserva) {
 
-        boolean existeConflito = repository.existeConflito(
+        boolean existeConflito = reservaRepository.existeConflito(
             reserva.getId(),
             reserva.getSala().getId(),
             reserva.getDataInicio(),
@@ -30,19 +34,54 @@ public class ReservaService {
             );
         }
 
-        repository.salvar(reserva);
+        reservaRepository.salvar(reserva);
     }
 
-    public void excluir(Long id) {
-        repository.excluir(id);
+    @Transactional
+    public void excluir(Long idReserva) {
+
+        UsuarioEntity logado = SessaoUtil.getUsuarioLogado();
+
+        if (logado == null) {
+            throw new RuntimeException("Usuário não autenticado.");
+        }
+
+        ReservaEntity reserva = reservaRepository.findById(idReserva);
+
+        if (reserva == null) {
+            throw new RuntimeException("Reserva não encontrada.");
+        }
+
+        boolean reservaJaOcorreu =
+                reserva.getDataInicio().isBefore(LocalDateTime.now());
+
+        if (logado.getPerfil() == PerfilUsuario.ADMIN) {
+            reservaRepository.excluir(idReserva);
+            return;
+        }
+
+        if (logado.getPerfil() == PerfilUsuario.ATENDENTE) {
+
+            if (reservaJaOcorreu) {
+                throw new RuntimeException(
+                    "A reserva já ocorreu e não pode mais ser cancelada."
+                );
+            }
+
+            reservaRepository.excluir(idReserva);
+            return;
+        }
+
+        throw new RuntimeException("Você não tem permissão para cancelar reservas.");
     }
+
 
     public List<ReservaEntity> listarTodas() {
-        return repository.listarTodas();
+        return reservaRepository.listarTodas();
     }
 
     public ReservaEntity buscarPorId(Long id) {
-        return repository.buscarPorId(id);
+        return reservaRepository.findById(id);
     }
     public List<SalaEntity> consultarDisponibilidade(
             Long idUnidade,
@@ -58,7 +97,7 @@ public class ReservaService {
             throw new RuntimeException("A data final não pode ser menor que a inicial.");
         }
 
-        return repository.buscarSalasDisponiveis(idUnidade, inicio, fim);
+        return reservaRepository.buscarSalasDisponiveis(idUnidade, inicio, fim);
     }
 }
 

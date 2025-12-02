@@ -70,5 +70,16 @@ public class PacienteRepository {
             return null;
         }
     }
+    
+    public PacienteEntity buscarPorCns(String cns) {
+        return em.createQuery(
+            "SELECT p FROM PacienteEntity p WHERE p.cns = :cns",
+            PacienteEntity.class
+        )
+        .setParameter("cns", cns)
+        .getResultStream()
+        .findFirst()
+        .orElse(null);
+    }
 }
 

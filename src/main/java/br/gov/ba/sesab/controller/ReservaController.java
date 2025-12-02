@@ -21,7 +21,7 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class ReservaController implements Serializable {
+public class ReservaController extends AbstractController implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,20 +39,16 @@ public class ReservaController implements Serializable {
 
 	private List<UnidadeSaudeEntity> unidades;
 	private List<SalaEntity> salasDaUnidade;
-
-	private Long idUnidadeSelecionada;
-
 	private List<ReservaEntity> reservas;
+	private List<ReservaEntity> reservasFiltradas;
 	private List<SalaEntity> salas;
-
-	private ReservaEntity reserva;
-
+	private Long idUnidadeSelecionada;
 	private Long idSalaSelecionada;
 	private String cpfSolicitante;
 	private boolean modoEdicao;
-	
-	
+	private ReservaEntity reserva;
 
+	private String filtro;
 	
 
 	@PostConstruct
@@ -80,15 +76,12 @@ public class ReservaController implements Serializable {
 
 		this.reserva = r;
 
-		// Sala selecionada
 		if (r.getSala() != null) {
 			idSalaSelecionada = r.getSala().getId();
 
-			// Unidade vem pela sala
 			if (r.getSala().getUnidade() != null) {
 				idUnidadeSelecionada = r.getSala().getUnidade().getId();
 
-				// Carrega as salas da unidade para popular o combo
 				salasDaUnidade = salaService.listarPorUnidade(idUnidadeSelecionada);
 			} else {
 				idUnidadeSelecionada = null;
@@ -101,7 +94,6 @@ public class ReservaController implements Serializable {
 			salasDaUnidade.clear();
 		}
 
-		// CPF vem do usuário solicitante
 		if (r.getUsuarioSolicitante() != null) {
 			cpfSolicitante = r.getUsuarioSolicitante().getCpf();
 		} else {
@@ -187,9 +179,37 @@ public class ReservaController implements Serializable {
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
 		}
 	}
+	
+	public void filtrar() {
 
-	public void listarReservas() {
-		reservas = reservaService.listarTodas();
+	    if (filtro == null || filtro.trim().isEmpty()) {
+	        reservasFiltradas = reservas;
+	        return;
+	    }
+
+	    String termo = filtro.toLowerCase();
+
+	    reservasFiltradas = reservas.stream()
+	    		.filter(r ->
+	    	    r.getUsuarioSolicitante() != null &&
+	    	    (
+	    	        r.getUsuarioSolicitante().getNome().toLowerCase().contains(termo) ||
+	    	        r.getSala().getNome().toLowerCase().contains(termo) ||
+	    	        r.getSala().getUnidade().getNome().toLowerCase().contains(termo)
+	    	    )
+	    	)
+	        .toList();
+	}
+	
+	public void limparFiltro() {
+	    filtro = null;
+	    reservasFiltradas = reservas;
+	}
+	
+
+	private void listarReservas() {
+	    reservas = reservaService.listarTodas();
+	    reservasFiltradas = reservas;
 	}
 
 	public void carregarSalasDaUnidade() {
@@ -222,6 +242,22 @@ public class ReservaController implements Serializable {
 		} else {
 			reserva.setUsuarioSolicitante(usuario);
 		}
+	}
+
+	public List<ReservaEntity> getReservasFiltradas() {
+		return reservasFiltradas;
+	}
+
+	public void setReservasFiltradas(List<ReservaEntity> reservasFiltradas) {
+		this.reservasFiltradas = reservasFiltradas;
+	}
+
+	public String getFiltro() {
+		return filtro;
+	}
+
+	public void setFiltro(String filtro) {
+		this.filtro = filtro;
 	}
 
 	public List<ReservaEntity> getReservas() {

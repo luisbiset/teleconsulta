@@ -16,7 +16,7 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class UsuarioController implements Serializable {
+public class UsuarioController extends AbstractController implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -189,9 +189,7 @@ public class UsuarioController implements Serializable {
         this.confirmarSenha = confirmarSenha;
     }
     
-    public boolean isAdmin() {
-        return SessaoUtil.isAdmin();
-    }
+   
 
 	public List<UsuarioEntity> getUsuariosFiltrados() {
 		return usuariosFiltrados;

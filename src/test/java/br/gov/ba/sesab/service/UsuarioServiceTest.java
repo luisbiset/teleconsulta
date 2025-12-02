@@ -79,15 +79,19 @@ class UsuarioServiceTest {
 
     @Test
     void naoDeveSalvarQuandoEmailJaExistir() {
+        // ADMIN logado
         UsuarioEntity admin = new UsuarioEntity();
         admin.setPerfil(PerfilUsuario.ADMIN);
 
+        // já existe no banco
         UsuarioEntity existente = new UsuarioEntity();
         existente.setId(1L);
         existente.setEmail("email@teste.com");
 
+        // novo usuário tentando usar o mesmo email
         UsuarioEntity novo = new UsuarioEntity();
         novo.setEmail("email@teste.com");
+        novo.setSenha("123456"); // 👈 IMPORTANTE: senha preenchida pra passar da 1ª validação
 
         when(usuarioRepository.buscarPorLogin("email@teste.com"))
                 .thenReturn(existente);
@@ -95,18 +99,19 @@ class UsuarioServiceTest {
         try (MockedStatic<SessaoUtil> mocked = mockStatic(SessaoUtil.class)) {
             mocked.when(SessaoUtil::getUsuarioLogado).thenReturn(admin);
 
-            RuntimeException ex = assertThrows(RuntimeException.class, () ->
-                usuarioService.salvar(novo)
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                    usuarioService.salvar(novo)
             );
 
             assertEquals(
-                "Já existe um usuário cadastrado com este email.",
-                ex.getMessage()
+                    "Já existe um usuário cadastrado com este email.",
+                    ex.getMessage()
             );
 
             verify(usuarioRepository, never()).salvar(any());
         }
     }
+
 
 
     @Test
