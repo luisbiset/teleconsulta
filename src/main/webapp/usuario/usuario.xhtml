@@ -38,7 +38,7 @@
 
 				<p:commandButton value="Novo Usuário" icon="pi pi-plus"
 					action="#{usuarioController.novo}" update=":formUsuario:dlg"
-					oncomplete="PF('dlgUsuario').show()" 
+					oncomplete="PF('dlgUsuario').show()"
 					rendered="#{usuarioController.admin}" />
 
 			</div>
@@ -65,7 +65,7 @@
 							timeZone="America/Sao_Paulo" />
 					</h:outputText>
 				</p:column>
-				
+
 				<p:column headerText="Perfil">
 					<h:outputText value="#{u.perfil}" />
 				</p:column>
@@ -147,7 +147,8 @@
 					</h:panelGroup>
 
 
-					<h:outputLabel value="Senha:" for="senha" rendered="#{usuarioController.usuario.perfil ne 'PACIENTE'}" />
+					<h:outputLabel value="Senha:" for="senha"
+						rendered="#{usuarioController.usuario.perfil ne 'PACIENTE'}" />
 					<p:password id="senha" value="#{usuarioController.novaSenha}"
 						required="#{usuarioController.usuario.id == null}"
 						rendered="#{usuarioController.usuario.perfil ne 'PACIENTE'}"
@@ -161,9 +162,10 @@
 
 				<p:commandButton value="Salvar"
 					rendered="#{usuarioController.admin}"
-					action="#{usuarioController.salvar}"
-					update="@form :formUsuario:msgs"
-					oncomplete="if (!args.validationFailed) PF('dlgUsuario').hide();" />
+					action="#{usuarioController.salvar}" process="@form"
+					update=":formUsuario:tabelaUsuarios :formUsuario:msgs"
+					partialSubmit="false"
+					oncomplete="if (!args['validationFailed'] &amp;&amp; args.sucesso) PF('dlgUsuario').hide();" />
 
 			</p:dialog>
 

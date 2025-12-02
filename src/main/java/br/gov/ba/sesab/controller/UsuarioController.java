@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.primefaces.PrimeFaces;
+
 import br.gov.ba.sesab.entity.UsuarioEntity;
 import br.gov.ba.sesab.service.UsuarioService;
-import br.gov.ba.sesab.util.SessaoUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -56,6 +57,7 @@ public class UsuarioController extends AbstractController implements Serializabl
         	        }
         	    }
             usuarioService.salvar(usuario);
+            PrimeFaces.current().ajax().addCallbackParam("sucesso", true);
             novaSenha =null;
 
             addMensagem("Usuário salvo com sucesso!");

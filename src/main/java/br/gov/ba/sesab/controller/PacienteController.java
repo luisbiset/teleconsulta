@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.primefaces.PrimeFaces;
+
 import br.gov.ba.sesab.entity.PacienteEntity;
 import br.gov.ba.sesab.entity.UsuarioEntity;
 import br.gov.ba.sesab.service.PacienteService;
@@ -49,6 +51,8 @@ public class PacienteController extends AbstractController implements Serializab
 
 	        listar();
 	        novo();
+
+	        PrimeFaces.current().ajax().addCallbackParam("sucesso", true);
 
 	        FacesContext.getCurrentInstance().addMessage(null,
 	            new FacesMessage(FacesMessage.SEVERITY_INFO,

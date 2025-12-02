@@ -84,7 +84,7 @@
 						update=":formPaciente:tabelaPacientes :formFiltroPaciente:msgs"
 						rendered="#{usuarioController.admin}"
 						action="#{pacienteController.excluir(p.id)}">
-						
+
 						<p:confirm header="Confirmação"
 							message="Deseja excluir este usuário?"
 							icon="pi pi-exclamation-triangle" />
@@ -164,6 +164,7 @@
 						<h:outputLabel value="Data de Nascimento:*" for="dataNascimento" />
 						<p:inputMask value="#{pacienteController.paciente.dataNascimento}"
 							mask="99/99/9999" required="true" autoClear="false"
+							 converterMessage="Data de nascimento inválida."
 							requiredMessage="Data de nascimento é obrigatória">
 							<f:convertDateTime pattern="dd/MM/yyyy" />
 						</p:inputMask>
@@ -179,9 +180,12 @@
 				</h:panelGroup>
 				<br />
 				<p:commandButton value="Salvar"
-					action="#{pacienteController.salvar}"
-					update="@form :formFiltroPaciente:msgs"
-					oncomplete="if (!args.validationFailed) PF('dlgPaciente').hide();" />
+    action="#{pacienteController.salvar}"
+    update=":formPaciente:tabelaPacientes :formFiltroPaciente:msgs"
+    process="@form"
+    partialSubmit="false"
+    oncomplete="if (!args['validationFailed'] &amp;&amp; args.sucesso) PF('dlgPaciente').hide();" />
+
 			</p:dialog>
 
 			<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
