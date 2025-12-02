@@ -42,6 +42,7 @@
 			<p:growl id="msgs" showDetail="false" />
 
 			<p:dataTable id="tabelaReservas"
+			emptyMessage="Nenhuma reserva cadastrada">
 				value="#{reservaController.reservasFiltradas}" var="r"
 				paginator="true" rows="10" paginatorPosition="bottom">
 
