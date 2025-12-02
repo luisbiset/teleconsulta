@@ -1,6 +1,7 @@
 package br.gov.ba.sesab.entity;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,4 +65,30 @@ public class SalaEntity implements Serializable {
     public void setUnidade(UnidadeSaudeEntity unidade) {
         this.unidade = unidade;
     }
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SalaEntity other = (SalaEntity) obj;
+		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		return "SalaEntity [id=" + id + ", nome=" + nome + ", capacidade=" + capacidade + ", unidade=" + unidade + "]";
+	}
+    
+    
+    
+    
 }

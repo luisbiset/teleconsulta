@@ -134,4 +134,12 @@ public class UnidadeSaudeEntity implements Serializable {
 		return id != null ? id.hashCode() : 0;
 	}
 
+	@Override
+	public String toString() {
+		return "UnidadeSaudeEntity [id=" + id + ", nome=" + nome + ", razaoSocial=" + razaoSocial + ", sigla=" + sigla
+				+ ", cnpj=" + cnpj + ", cnes=" + cnes + "]";
+	}
+	
+	
+
 }

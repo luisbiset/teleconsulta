@@ -2,6 +2,7 @@ package br.gov.ba.sesab.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -146,4 +147,34 @@ public class PacienteEntity implements Serializable {
 	public void setCns(String cns) {
 		this.cns = cns;
 	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PacienteEntity other = (PacienteEntity) obj;
+		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		return "PacienteEntity [id=" + id + ", usuario=" + usuario + ", rg=" + rg + ", telefone=" + telefone
+				+ ", dataNascimento=" + dataNascimento + ", sexo=" + sexo + ", nomeMae=" + nomeMae + ", nomePai="
+				+ nomePai + ", endereco=" + endereco + ", nomeSocial=" + nomeSocial + ", cns=" + cns + "]";
+	}
+	
+	
 }

@@ -141,4 +141,15 @@ public class UsuarioEntity implements Serializable {
 		UsuarioEntity other = (UsuarioEntity) obj;
 		return Objects.equals(id, other.id);
 	}
+
+	@Override
+	public String toString() {
+		return "UsuarioEntity [id=" + id + ", nome=" + nome + ", email=" + email + ", cpf=" + cpf + ", dataCadastro="
+				+ dataCadastro + ", senha=" + senha + ", perfil=" + perfil + ", ativo=" + ativo + ", paciente="
+				+ paciente + "]";
+	}
+	
+	
+	
+	
 }
