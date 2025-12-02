@@ -24,22 +24,15 @@
 					update="tabelaSalas"
 					actionListener="#{salaController.limparFiltro}" />
 
+				<p:commandButton value="Nova Sala" icon="pi pi-plus" process="@this"
+					action="#{salaController.novo}" update=":formSala"
+					rendered="#{loginController.admin}"
+					oncomplete="PF('dlgSala').show()" resetValues="true" />
+
 			</div>
 
-			<br />
-
-			<p:commandButton value="Nova Sala" icon="pi pi-plus" process="@this"
-				action="#{salaController.novo}" update=":formSala"
-				rendered="#{loginController.admin}"
-				oncomplete="PF('dlgSala').show()" resetValues="true" />
-
-
-
-			<br />
-			<br />
-
 			<p:dataTable id="tabelaSalas" value="#{salaController.salas}" var="s"
-			emptyMessage="Nenhuma sala cadastrada">
+				emptyMessage="Nenhuma sala cadastrada">
 				paginator="true" rows="10" paginatorPosition="bottom">
 
 				<p:column headerText="Nome">
@@ -54,7 +47,8 @@
 					<h:outputText value="#{s.unidade.nome}" />
 				</p:column>
 
-				<p:column headerText="Ações" rendered="#{loginController.admin}" style="width:150px; text-align:center;">
+				<p:column headerText="Ações" rendered="#{loginController.admin}"
+					style="width:150px; text-align:center;">
 
 					<p:commandButton icon="pi pi-pencil" process="@this"
 						update=":formSala" action="#{salaController.editar(s)}"
@@ -81,7 +75,8 @@
 					styleClass="ui-confirmdialog-no" icon="pi pi-times" />
 			</p:confirmDialog>
 
-			<p:dialog id="dlg" widgetVar="dlgSala" header="#{salaController.sala.id == null 
+			<p:dialog id="dlg" widgetVar="dlgSala"
+				header="#{salaController.sala.id == null 
                     ? 'Cadastrar Sala' 
                     : 'Editar Sala'}"
 				modal="true">
@@ -89,7 +84,8 @@
 				<h:panelGrid columns="2" cellpadding="5">
 
 					<h:outputLabel value="Nome:" />
-					<p:inputText value="#{salaController.sala.nome}" required="true" requiredMessage="Informe o nome da sala." />
+					<p:inputText value="#{salaController.sala.nome}" required="true"
+						requiredMessage="Informe o nome da sala." />
 
 					<h:outputLabel value="Capacidade:" />
 					<p:inputText value="#{salaController.sala.capacidade}"
@@ -98,9 +94,10 @@
 					<h:outputLabel value="Unidade:" />
 					<p:selectOneMenu value="#{salaController.idUnidadeSelecionada}"
 						required="true" disabled="#{salaController.sala.id != null}"
-						 requiredMessage="Selecione uma unidade.">
+						requiredMessage="Selecione uma unidade.">
 
-						<f:selectItem itemLabel="Selecione" itemValue="#{null}" requiredMessage="Selecione uma unidade." />
+						<f:selectItem itemLabel="Selecione" itemValue="#{null}"
+							requiredMessage="Selecione uma unidade." />
 
 						<f:selectItems value="#{salaController.unidades}" var="u"
 							itemLabel="#{u.nome}" itemValue="#{u.id}" />

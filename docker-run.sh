@@ -1,10 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# docker-run.sh - builda a imagem e sobe o container (bind local ./data)
-# Requisitos: docker instalado e .env presente na raiz do projeto.
-
-echo "Iniciando build e deploy via Docker..."
+echo " Iniciando build e deploy via Docker..."
 
 if [ -f .env ]; then
   export $(grep -v '^\s*#' .env | xargs)
@@ -13,24 +10,15 @@ else
   exit 1
 fi
 
-if [ -z "${APP_PORT:-}" ]; then
-  echo "APP_PORT não definido no .env"
-  exit 1
-fi
+# validações
+[ -z "${APP_PORT:-}" ]        && { echo " APP_PORT não definido no .env"; exit 1; }
+[ -z "${SQLITE_PATH:-}" ]     && { echo " SQLITE_PATH não definido no .env"; exit 1; }
+[ -z "${SQLITE_FILENAME:-}" ] && { echo " SQLITE_FILENAME não definido no .env"; exit 1; }
 
-if [ -z "${SQLITE_PATH:-}" ]; then
-  echo " SQLITE_PATH não definido no .env"
-  exit 1
-fi
+echo " APP_PORT        = ${APP_PORT}"
+echo " SQLITE_PATH     = ${SQLITE_PATH}"
+echo " SQLITE_FILENAME = ${SQLITE_FILENAME}"
 
-if [ -z "${SQLITE_FILENAME:-}" ]; then
-  echo " SQLITE_FILENAME não definido no .env"
-  exit 1
-fi
-
-echo " APP_PORT       = ${APP_PORT}"
-echo " SQLITE_PATH    = ${SQLITE_PATH}"
-echo " SQLITE_FILENAME= ${SQLITE_FILENAME}"
 
 HOST_DATA_DIR="./data"
 if [ ! -d "${HOST_DATA_DIR}" ]; then
@@ -38,17 +26,16 @@ if [ ! -d "${HOST_DATA_DIR}" ]; then
   mkdir -p "${HOST_DATA_DIR}"
 fi
 
-echo " Ajustando permissões da pasta ${HOST_DATA_DIR} (chmod 777)..."
-chmod -R 777 "${HOST_DATA_DIR}"
-
 IMAGE_NAME="teleconsulta-app"
 CONTAINER_NAME="teleconsulta-app-container"
 
-echo "  Buildando a imagem Docker (${IMAGE_NAME})..."
+echo "🔧 Buildando imagem Docker (${IMAGE_NAME})..."
 docker build -t "${IMAGE_NAME}" .
+
 
 echo " Removendo container antigo (se existir)..."
 docker rm -f "${CONTAINER_NAME}" 2>/dev/null || true
+
 
 echo " Iniciando container ${CONTAINER_NAME}..."
 docker run -d \
@@ -63,4 +50,3 @@ docker run -d \
 
 echo " Container iniciado com sucesso!"
 echo " Acesse: http://localhost:${APP_PORT}"
-
