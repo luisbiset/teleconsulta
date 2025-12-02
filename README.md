@@ -42,7 +42,7 @@ chmod +x docker-run.sh
 ```bash
 ./docker-run.sh
 ```
-6. Após iniciar o contêiner da aplicação, voce já pode acessar através do navegador pelo endereço:
+6. Após iniciar o container da aplicação, voce já pode acessar através do navegador pelo endereço:
 ```bash
 http://localhost:8080
 ```
