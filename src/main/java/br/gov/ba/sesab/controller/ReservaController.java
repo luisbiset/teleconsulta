@@ -10,6 +10,7 @@ import br.gov.ba.sesab.entity.ReservaEntity;
 import br.gov.ba.sesab.entity.SalaEntity;
 import br.gov.ba.sesab.entity.UnidadeSaudeEntity;
 import br.gov.ba.sesab.entity.UsuarioEntity;
+import br.gov.ba.sesab.enums.PerfilUsuario;
 import br.gov.ba.sesab.service.ReservaService;
 import br.gov.ba.sesab.service.SalaService;
 import br.gov.ba.sesab.service.UnidadeSaudeService;
@@ -236,12 +237,13 @@ public class ReservaController extends AbstractController implements Serializabl
 
 		String cpfLimpo = cpfSolicitante.replaceAll("[^0-9]", "");
 
-		UsuarioEntity usuario = usuarioService.buscarUsuarioPorCpf(cpfLimpo);
+		UsuarioEntity usuario = usuarioService.buscarUsuarioPorCpfEperfil(cpfLimpo, PerfilUsuario.PACIENTE);
+
 
 		if (usuario == null) {
 			reserva.setUsuarioSolicitante(null);
 			FacesContext.getCurrentInstance().addMessage(null,
-					new FacesMessage(FacesMessage.SEVERITY_WARN, "Nenhum usuário encontrado com esse CPF.", null));
+					new FacesMessage(FacesMessage.SEVERITY_WARN, "Nao é possivel cadastrar reserva para esse usuário.", null));
 		} else {
 			reserva.setUsuarioSolicitante(usuario);
 		}

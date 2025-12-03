@@ -12,11 +12,16 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-
-# ===============================
-# ETAPA 2 — TOMCAT COM JAVA 17
-# ===============================
 FROM tomcat:10.1-jdk17
+
+RUN apt-get update && \
+    apt-get install -y locales && \
+    sed -i 's/# pt_BR.UTF-8 UTF-8/pt_BR.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen pt_BR.UTF-8
+
+ENV LANG=pt_BR.UTF-8
+ENV LANGUAGE=pt_BR:pt
+ENV LC_ALL=pt_BR.UTF-8
 
 RUN rm -rf /usr/local/tomcat/webapps/*
 

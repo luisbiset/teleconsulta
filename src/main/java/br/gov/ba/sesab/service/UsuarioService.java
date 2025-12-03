@@ -172,5 +172,21 @@ public class UsuarioService {
 		usuario.setSenha(PasswordUtil.hash(novaSenha));
 		usuarioRepository.salvar(usuario);
 	}
+	
+	public UsuarioEntity buscarUsuarioPorCpfEperfil(String cpf, PerfilUsuario... perfisPermitidos) {
+	    UsuarioEntity usuario = usuarioRepository.buscarPorCpf(cpf);
+
+	    if (perfisPermitidos == null || perfisPermitidos.length == 0) {
+	        return usuario;
+	    }
+
+	    for (PerfilUsuario p : perfisPermitidos) {
+	        if (usuario != null && usuario.getPerfil() == p) {
+	            return usuario;
+	        }
+	    }
+
+	    return null;
+	}
 
 }

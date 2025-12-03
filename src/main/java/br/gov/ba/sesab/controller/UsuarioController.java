@@ -46,9 +46,7 @@ public class UsuarioController extends AbstractController implements Serializabl
         this.novaSenha = null;
         this.confirmarSenha = null;
         this.senhaAtual = null;
-
-        PrimeFaces.current().ajax().update("formUsuario:dlg");
-        PrimeFaces.current().resetInputs("formUsuario:dlg");
+        
     }
 
 
@@ -63,6 +61,12 @@ public class UsuarioController extends AbstractController implements Serializabl
         	        } else {
         	            usuario.setSenha(null); 
         	        }
+        	    }
+        	 
+        	 UsuarioEntity existente = usuarioService.buscarUsuarioPorCpf(usuario.getCpf());
+
+        	    if (existente != null && !existente.getId().equals(usuario.getId())) {
+        	        throw new IllegalArgumentException("Já existe um usuário cadastrado com este CPF.");
         	    }
             usuarioService.salvar(usuario);
             PrimeFaces.current().ajax().addCallbackParam("sucesso", true);

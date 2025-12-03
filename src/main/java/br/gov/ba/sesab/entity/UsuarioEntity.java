@@ -24,7 +24,7 @@ public class UsuarioEntity implements Serializable {
 	private String nome;
 
 	@NotBlank(message = "Email é obrigatório")
-	@Email
+	@Email(message = "Informe um E-mail válido")
 	@Column(nullable = false, unique = true, length = 150)
 	private String email;
 
