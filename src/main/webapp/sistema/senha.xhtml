@@ -10,7 +10,7 @@
 
         <h:form id="formSenha">
 
-            <p:growl id="msgs" showDetail="true"/>
+            <p:growl id="msgs" showDetail="false"/>
 
             <p:panel header="Atualização de Senha" style="max-width:400px;">
 
@@ -18,14 +18,17 @@
 
                     <h:outputLabel value="Senha Atual:"/>
                     <p:password value="#{sistemaController.senhaAtual}"
+                    requiredMessage="Digite a senha atual."
                                 required="true"/>
 
                     <h:outputLabel value="Nova Senha:"/>
                     <p:password value="#{sistemaController.novaSenha}"
+                    requiredMessage="Digite a nova senha."
                                 required="true"/>
 
                     <h:outputLabel value="Confirmar:"/>
                     <p:password value="#{sistemaController.confirmarSenha}"
+                     requiredMessage="Digite a nova senha."
                                 required="true"/>
 
                 </h:panelGrid>

@@ -156,6 +156,7 @@
 						<p:datePicker value="#{reservaController.reserva.dataInicio}"
 							style="flex:1;" pattern="dd/MM/yyyy HH:mm" showTime="true"
 							requiredMessage="Selecione a data de início da reserva."
+							 converterMessage="Data inicio inválida."
 							required="true" converter="localDateTimeConverter" />
 					</div>
 
@@ -164,6 +165,7 @@
 						<p:datePicker value="#{reservaController.reserva.dataFim}"
 							style="flex:1;" pattern="dd/MM/yyyy HH:mm" showTime="true"
 							requiredMessage="selecione a data fim da reserva."
+							 converterMessage="Data fim inválida."
 							required="true" converter="localDateTimeConverter" />
 					</div>
 
