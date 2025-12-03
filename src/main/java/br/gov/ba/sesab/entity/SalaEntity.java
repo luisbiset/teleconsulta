@@ -30,7 +30,7 @@ public class SalaEntity implements Serializable {
 
 
     @ManyToOne
-    @JoinColumn(name = "unidade_id")
+    @JoinColumn(name = "unidade_id", nullable = false)
     private UnidadeSaudeEntity unidade;
 
 
