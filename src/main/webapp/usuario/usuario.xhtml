@@ -39,6 +39,7 @@
 				<p:commandButton value="Novo Usuário" icon="pi pi-plus"
 					action="#{usuarioController.novo}" update=":formUsuario:dlg"
 					oncomplete="PF('dlgUsuario').show()"
+					process="@this"
 					rendered="#{usuarioController.admin}" />
 
 			</div>
