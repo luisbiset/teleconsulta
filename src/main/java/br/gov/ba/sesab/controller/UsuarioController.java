@@ -42,7 +42,15 @@ public class UsuarioController extends AbstractController implements Serializabl
     
     public void novo() {
         this.usuario = new UsuarioEntity();
+        this.usuario.setPerfil(null);
+        this.novaSenha = null;
+        this.confirmarSenha = null;
+        this.senhaAtual = null;
+
+        PrimeFaces.current().ajax().update("formUsuario:dlg");
+        PrimeFaces.current().resetInputs("formUsuario:dlg");
     }
+
 
     public void salvar() {
         try {
@@ -112,10 +120,13 @@ public class UsuarioController extends AbstractController implements Serializabl
         }
     }
 
-
     public void editar(UsuarioEntity u) {
-        this.usuario = u;
+        this.usuario = new UsuarioEntity(u);  
+        this.novaSenha = null;
+        this.confirmarSenha = null;
     }
+
+
 
     public void listar() {
         usuarios = usuarioService.listarTodos();

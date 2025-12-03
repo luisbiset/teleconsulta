@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.primefaces.PrimeFaces;
+
 import br.gov.ba.sesab.entity.UnidadeSaudeEntity;
 import br.gov.ba.sesab.service.UnidadeSaudeService;
 import jakarta.annotation.PostConstruct;
@@ -40,6 +42,7 @@ public class UnidadeSaudeController extends AbstractController implements Serial
     public void salvar() {
         try {
         	unidadeSaudeService.salvar(unidade);
+        	 PrimeFaces.current().ajax().addCallbackParam("sucesso", true);
 
             addMensagem("Unidade salva com sucesso!");
             novo();

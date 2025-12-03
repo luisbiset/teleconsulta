@@ -135,10 +135,13 @@
 				<br />
 
 				<p:commandButton value="Salvar"
-					action="#{unidadeSaudeController.salvar}"
-					update="@form :formFiltroUnidade:msgs"
-					oncomplete="PF('dlgUnidade').hide();"
-					rendered="#{loginController.admin}" />
+    action="#{unidadeSaudeController.salvar}"
+    process="@form"
+    update=":formUnidade:tabelaUnidades :formFiltroUnidade:msgs"
+    partialSubmit="false"
+    oncomplete="if (!args['validationFailed'] &amp;&amp; args.sucesso) PF('dlgUnidade').hide();"
+    rendered="#{loginController.admin}" />
+
 
 			</p:dialog>
 

@@ -108,8 +108,14 @@
 
 				<br />
 
-				<p:commandButton value="Salvar" action="#{salaController.salvar}"
-					update="@form" oncomplete="PF('dlgSala').hide();" />
+				<p:commandButton value="Salvar"
+    action="#{salaController.salvar}"
+    process="@form"
+    update=":formSala:tabelaSalas :formSala:msgs"
+    partialSubmit="false"
+    oncomplete="if (!args['validationFailed'] &amp;&amp; args.sucesso) PF('dlgSala').hide();"
+    rendered="#{loginController.admin}" />
+
 
 			</p:dialog>
 

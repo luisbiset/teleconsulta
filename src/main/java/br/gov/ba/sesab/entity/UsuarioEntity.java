@@ -52,8 +52,37 @@ public class UsuarioEntity implements Serializable {
 	@OneToOne(mappedBy = "usuario")
 	private PacienteEntity paciente;
 
-;
 
+	public UsuarioEntity() {};
+	
+	public UsuarioEntity(UsuarioEntity other) {
+	    if (other == null) return;
+
+	    this.id = other.getId();
+	    this.nome = other.getNome();
+	    this.cpf = other.getCpf();
+	    this.email = other.getEmail();      
+	    this.perfil = other.getPerfil();    
+	    this.ativo = other.isAtivo();       
+	    this.senha = null;
+	}
+
+	public UsuarioEntity(Long id, @NotBlank(message = "Nome é obrigatório") @Size(min = 3, max = 150) String nome,
+			@NotBlank(message = "Email é obrigatório") @Email String email,
+			@NotBlank(message = "CPF é obrigatório") @Pattern(regexp = "^\\d{11}$", message = "CPF deve conter exatamente 11 números") String cpf,
+			Date dataCadastro, @Size(min = 6) String senha, PerfilUsuario perfil, boolean ativo,
+			PacienteEntity paciente) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.email = email;
+		this.cpf = cpf;
+		this.dataCadastro = dataCadastro;
+		this.senha = senha;
+		this.perfil = perfil;
+		this.ativo = ativo;
+		this.paciente = paciente;
+	}
 
 	public Long getId() {
 		return id;

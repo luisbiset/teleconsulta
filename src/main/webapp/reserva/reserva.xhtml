@@ -173,8 +173,12 @@
 					style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px;">
 
 					<p:commandButton value="Salvar" icon="pi pi-save"
-						action="#{reservaController.salvar}"
-						update=":formReserva:tabelaReservas :formReserva:msgs" />
+    action="#{reservaController.salvar}"
+    process="@form"
+    update=":formReserva:tabelaReservas :formReserva:msgs"
+    partialSubmit="false"
+    oncomplete="if (!args['validationFailed'] &amp;&amp; args.sucesso) PF('dlgReserva').hide();" />
+
 
 					<p:commandButton value="Cancelar" icon="pi pi-times"
 						onclick="PF('dlgReserva').hide(); return false;"

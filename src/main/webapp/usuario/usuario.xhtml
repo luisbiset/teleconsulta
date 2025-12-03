@@ -136,7 +136,7 @@
 							value="#{usuarioController.usuario.perfil}" required="true"
 							requiredMessage="Perfil é obrigatório" style="width:100%">
 
-							<f:selectItem itemLabel="Selecione" itemValue="#{null}"
+							<f:selectItem itemLabel="Selecione" itemValue=""
 								noSelectionOption="true" />
 
 							<f:selectItem itemLabel="Administrador" itemValue="ADMIN" />
@@ -161,11 +161,15 @@
 				<br />
 
 				<p:commandButton value="Salvar"
-					rendered="#{usuarioController.admin}"
-					action="#{usuarioController.salvar}" process="@form"
-					update=":formUsuario:tabelaUsuarios :formUsuario:msgs"
-					partialSubmit="false"
-					oncomplete="if (!args['validationFailed'] &amp;&amp; args.sucesso) PF('dlgUsuario').hide();" />
+    rendered="#{usuarioController.admin}"
+    action="#{usuarioController.salvar}" 
+    process="@form"
+    update=":formUsuario:tabelaUsuarios :formUsuario:msgs"
+    partialSubmit="false"
+    oncomplete="if (!args['validationFailed'] &amp;&amp; args.sucesso) {
+                    PF('dlgUsuario').jq.find('.ui-inputfield').val('');
+                    PF('dlgUsuario').hide();
+                }" />
 
 			</p:dialog>
 

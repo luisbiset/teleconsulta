@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.primefaces.PrimeFaces;
+
 import br.gov.ba.sesab.entity.ReservaEntity;
 import br.gov.ba.sesab.entity.SalaEntity;
 import br.gov.ba.sesab.entity.UnidadeSaudeEntity;
@@ -150,6 +152,7 @@ public class ReservaController extends AbstractController implements Serializabl
 			}
 
 			reservaService.salvar(reserva);
+			 PrimeFaces.current().ajax().addCallbackParam("sucesso", true);
 
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_INFO, "Reserva cadastrada com sucesso!", null));

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.primefaces.PrimeFaces;
+
 import br.gov.ba.sesab.entity.SalaEntity;
 import br.gov.ba.sesab.entity.UnidadeSaudeEntity;
 import br.gov.ba.sesab.service.SalaService;
@@ -70,6 +72,7 @@ public class SalaController extends AbstractController implements Serializable {
             }
 
             salaService.salvar(sala);
+            PrimeFaces.current().ajax().addCallbackParam("sucesso", true);
 
             addMensagem("Sala salva com sucesso!");
 
