@@ -1,22 +1,32 @@
 package br.gov.ba.sesab.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jboss.logging.Logger;
+
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @WebListener
 public class HibernateStartupListener implements ServletContextListener {
 
     private static EntityManagerFactory emf;
+    final Logger log = Logger.getLogger(HibernateStartupListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        System.out.println("🚀 Inicializando Hibernate...");
+    	
+    	  
+    	 
+    	log.info("=============================================");
+    	log.info(" INICIALIZANDO HIBERNATE (Startup)");
+    	log.info(" Ambiente: LOCAL");
+    	log.info(" Usando JDBC do persistence.xml");
+    	log.info("=============================================");
 
         Map<String, Object> props = new HashMap<>();
 
@@ -34,13 +44,15 @@ public class HibernateStartupListener implements ServletContextListener {
             props.put("hibernate.show_sql", "true");
             props.put("hibernate.format_sql", "true");
 
-            System.out.println("📌 Ambiente: DOCKER");
-            System.out.println("📌 Banco: " + dbUrl);
+            log.info(" Ambiente: DOCKER");
+            log.info(" Banco: " + dbUrl);
 
         } else {
-
-            System.out.println("📌 Ambiente: LOCAL");
-            System.out.println("📌 Usando JDBC definido no persistence.xml");
+        	
+        	log.info("=============================================");
+        	log.info(" Ambiente: LOCAL");
+            log.info(" Usando JDBC definido no persistence.xml");
+            log.info("=============================================");
         }
 
         emf = Persistence.createEntityManagerFactory("teleconsultaPU", props);
@@ -50,7 +62,9 @@ public class HibernateStartupListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
         if (emf != null && emf.isOpen()) {
             emf.close();
-            System.out.println("🛑 Hibernate finalizado.");
+            log.info("=============================================");
+            log.info(" Hibernate finalizado.");
+            log.info("=============================================");
         }
     }
 

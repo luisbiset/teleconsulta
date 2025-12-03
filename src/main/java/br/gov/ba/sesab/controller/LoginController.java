@@ -53,11 +53,8 @@ public class LoginController extends AbstractController implements Serializable 
             HttpSession session = request.getSession(true);
             session.setAttribute("usuarioLogado", usuario);
             
-            System.out.println(">>> LOGIN: GRAVOU USUARIO NA SESSAO: " 
-            	    + usuario.getCpf() + " | SESSION ID: " + session.getId());
 
             try {
-            	System.out.println(">>> LOGIN: REDIRECIONANDO PARA MENU");
 
                 FacesContext.getCurrentInstance()
                         .getExternalContext()

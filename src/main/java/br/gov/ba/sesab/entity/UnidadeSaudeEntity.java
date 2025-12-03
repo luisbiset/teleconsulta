@@ -115,9 +115,6 @@ public class UnidadeSaudeEntity implements Serializable {
 		this.cnes = cnes;
 	}
 
-	// =====================
-	// EQUALS E HASHCODE
-	// =====================
 
 	@Override
 	public boolean equals(Object obj) {

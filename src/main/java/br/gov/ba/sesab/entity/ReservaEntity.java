@@ -37,12 +37,6 @@ public class ReservaEntity implements Serializable {
     @Column(name = "data_fim", nullable = false)
     private LocalDateTime dataFim;
 
-    // =====================
-    // GETTERS E SETTERS
-    // =====================
-
-    
-    
     
     public UsuarioEntity getUsuarioSolicitante() {
         return usuarioSolicitante;

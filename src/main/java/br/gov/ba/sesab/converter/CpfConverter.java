@@ -14,12 +14,10 @@ public class CpfConverter implements Converter<String> {
             return null;
         }
 
-        // Remove tudo que não for número
         String apenasNumeros = value.replaceAll("\\D", "");
 
-        // Garante que só volte se for válido
         if (apenasNumeros.length() != 11) {
-            return null; // força cair na validação de required/pattern
+            return null; 
         }
 
         return apenasNumeros;
@@ -31,7 +29,6 @@ public class CpfConverter implements Converter<String> {
             return "";
         }
 
-        // Se já vier mascarado por algum motivo, limpa primeiro
         String apenasNumeros = value.replaceAll("\\D", "");
 
         if (apenasNumeros.length() != 11) {

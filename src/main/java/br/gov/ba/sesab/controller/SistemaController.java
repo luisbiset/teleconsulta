@@ -66,7 +66,6 @@ public class SistemaController extends AbstractController implements Serializabl
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, msg, null));
 	}
 
-	// GETTERS
 	public UsuarioEntity getUsuario() {
 		return usuario;
 	}

@@ -119,7 +119,6 @@ public class ConsultaController implements Serializable {
 
 
 
-    // ================= GETTERS E SETTERS =================
 
     public Long getIdUnidade() {
         return idUnidade;

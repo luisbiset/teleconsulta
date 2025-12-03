@@ -224,7 +224,7 @@ public class ReservaController extends AbstractController implements Serializabl
 		}
 
 		salasDaUnidade = salaService.listarPorUnidade(idUnidadeSelecionada);
-		idSalaSelecionada = null; // força nova escolha
+		idSalaSelecionada = null; 
 	}
 
 	public void buscarUsuarioPorCpf() {

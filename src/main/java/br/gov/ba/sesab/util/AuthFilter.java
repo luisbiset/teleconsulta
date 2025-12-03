@@ -54,7 +54,6 @@ public class AuthFilter implements Filter {
                 : null;
 
         if (usuario == null) {
-            System.out.println(">>> AUTHFILTER: USUARIO NULO, REDIRECIONANDO");
             res.sendRedirect(ctx + "/login.xhtml");
             return;
         }
